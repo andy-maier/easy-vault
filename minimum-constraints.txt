@@ -63,23 +63,30 @@
 #   pip         19.3.1
 #   setuptools  41.5.0
 #   wheel       0.33.5
+# * Python 3.9 support:
+#   pip         21.0
+#   setuptools  51.0.0
+#   wheel       0.36.0
 
 # For the base packages, we use the versions from Ubuntu 18.04 as a general
 # minimum, and then increase it to the first version that introduced support
 # for a particular Python version.
 # On pypy3 (py36), pip 18.0 is needed to support constraints like cffi!=1.11.3,>=1.8
 # pip 10.0.0 introduced the --exclude-editable option.
+# pip before 21.0 cannot install cryptography on py39
 pip==10.0.1; python_version <= '3.5'
 pip==18.0; python_version == '3.6'
 pip==18.1; python_version == '3.7'
-pip==19.3.1; python_version >= '3.8'
+pip==19.3.1; python_version == '3.8'
+pip==21.0; python_version >= '3.9'
 setuptools==39.0.1; python_version <= '3.6'
 setuptools==40.6.0; python_version == '3.7'
-setuptools==41.5.0; python_version >= '3.8'
+setuptools==41.5.0; python_version == '3.8'
+setuptools==51.0.0; python_version >= '3.9'
 wheel==0.30.0; python_version <= '3.6'
 wheel==0.32.0; python_version == '3.7'
-wheel==0.33.5; python_version >= '3.8'
-
+wheel==0.33.5; python_version == '3.8'
+wheel==0.36.0; python_version >= '3.9'
 
 # Direct dependencies for installation (must be consistent with requirements.txt)
 
@@ -88,7 +95,11 @@ wheel==0.33.5; python_version >= '3.8'
 # tox 3.17 requires six>=1.14.0
 six==1.14.0
 
-cryptography==3.4.0
+cryptography==3.3; python_version == '2.7'
+cryptography==2.8; python_version == '3.4'
+cryptography==3.2.1; python_version == '3.5'
+cryptography==3.4.7; python_version >= '3.6'
+
 keyring==18.0.0
 
 # PyYAML is also pulled in by dparse and python-coveralls
@@ -99,6 +110,9 @@ yamlloader==0.5.5
 
 
 # Indirect dependencies for installation (must be consistent with requirements.txt, if present)
+
+pywin32-ctypes==0.2.0; sys_platform == 'win32'
+cffi==1.14.5
 
 
 # Direct dependencies for development (must be consistent with dev-requirements.txt)
@@ -124,7 +138,8 @@ coveralls==2.1.2; python_version >= '3.5'
 # Safety CI by pyup.io
 safety==1.8.7; python_version <= '3.4'
 safety==1.9.0; python_version >= '3.5'
-dparse==0.4.1
+dparse==0.4.1; python_version <= '3.4'
+dparse==0.5.1; python_version >= '3.5'
 
 # Sphinx (no imports, invoked via sphinx-build script):
 Sphinx==1.7.6
@@ -220,7 +235,6 @@ importlib-metadata==0.12; python_version <= '3.7'
 iniconfig==1.1.1
 isort==4.2.15
 Jinja2==2.8
-keyring==17.0.0; python_version >= '3.4'
 lazy-object-proxy==1.4.2
 MarkupSafe==0.23
 ordereddict==1.1
