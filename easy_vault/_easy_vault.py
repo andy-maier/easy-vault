@@ -23,7 +23,7 @@ import base64
 
 import yaml
 import six
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 
 __all__ = ['EasyVault', 'EasyVaultException', 'EasyVaultFileError',
            'EasyVaultDecryptError', 'EasyVaultEncryptError',
@@ -412,8 +412,7 @@ class EasyVault(object):
         encrypted_data = f.encrypt(clear_data)
         return encrypted_data
 
-    @staticmethod
-    def decrypt_data(encrypted_data, key):
+    def decrypt_data(self, encrypted_data, key):
         """
         Encryption implementation: Decrypt encrypted data with a symmetric key.
 
@@ -431,9 +430,19 @@ class EasyVault(object):
 
         Returns:
           :term:`byte string`: The clear data.
+
+        Raises:
+          EasyVaultDecryptError: Error decrypting the vault file
         """
         f = Fernet(key)
-        clear_data = f.decrypt(encrypted_data)
+        try:
+            clear_data = f.decrypt(encrypted_data)
+        except InvalidToken:
+            new_exc = EasyVaultDecryptError(
+                "Cannot decrypt vault file {fn}: Invalid password".
+                format(fn=self._filepath))
+            new_exc.__cause__ = None
+            raise new_exc  # EasyVaultDecryptError
         return clear_data
 
 
