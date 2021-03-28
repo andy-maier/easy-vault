@@ -60,32 +60,6 @@ contain passwords, API keys and other secrets, and allows transitioning to a
 secure but still easy to use approach for managing such secrets.
 
 
-.. _`Supported environments`:
-
-Supported environments
-----------------------
-
-The **easy-vault** package is supported in these environments:
-
-* Operating Systems: Linux, Windows (native, and with UNIX-like environments),
-  macOS/OS-X
-
-* Python: 2.7, 3.4, and higher
-
-
-.. _`Installation`:
-
-Installation
-------------
-
-The following command installs the **easy-vault** package and its
-prerequisite packages into the active Python environment:
-
-.. code-block:: bash
-
-    $ pip install easy-vault
-
-
 .. _`Documentation and change log`:
 
 Documentation and change log
