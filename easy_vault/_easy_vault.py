@@ -37,8 +37,9 @@ ENCRYPTED_LINE_WIDTH = 80
 HEADER_MONIKER = b'EASY_VAULT'
 HEADER_VERSION = b'1.0'
 HEADER = b'$' + HEADER_MONIKER + b';' + HEADER_VERSION + b'\n'
+# Python 2.7 does not support using both 'r' and 'b', so we use 'b' only.
 HEADER_PATTERN = re.compile(
-    rb'^\$(?P<moniker>[A-Z0-9_]+);(?P<version>[0-9.]+)$')
+    b'^\\$(?P<moniker>[A-Z0-9_]+);(?P<version>[0-9.]+)$')
 
 
 class EasyVaultException(Exception):
