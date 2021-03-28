@@ -108,6 +108,10 @@ PyYAML==5.2; python_version == '3.4'
 PyYAML==5.3.1; python_version >= '3.5'
 yamlloader==0.5.5
 
+Click==7.1.1; python_version == '2.7'
+Click==7.0; python_version == '3.4'
+Click==7.1.1; python_version >= '3.5'
+
 
 # Indirect dependencies for installation (must be consistent with requirements.txt, if present)
 
@@ -217,7 +221,6 @@ bleach==3.1.2; python_version == '3.4'
 bleach==3.3.0; python_version >= '3.5'
 certifi==2019.9.11
 chardet==3.0.3
-Click==7.0
 distlib==0.3.0; python_version >= '3.4'
 docopt==0.6.2
 docutils==0.13.1

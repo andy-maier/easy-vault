@@ -84,6 +84,11 @@ setuptools.setup(
     packages=[
         'easy_vault',
     ],
+    entry_points={
+        'console_scripts': [
+            'easy-vault = easy_vault.cli.cli:cli',
+        ],
+    },
     include_package_data=True,  # Includes MANIFEST.in files into sdist (only)
     scripts=[],
     install_requires=install_requires,

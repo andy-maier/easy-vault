@@ -1,12 +1,25 @@
 #!/usr/bin/env python
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
-Encrypt a vault file.
+Example script that accesses a vault file that may be encrypted or decrypted.
 """
 
 import sys
 import os
 import getpass
-import keyring
+from pprint import pprint
 from easy_vault import EasyVault, EasyVaultException, KeyRingLib
 
 
@@ -14,7 +27,7 @@ def main():
     """Main function"""
 
     if len(sys.argv) < 2:
-        print("Encrypt a vault file.")
+        print("Show content of a vault file.")
         print("Usage: {} vaultfile".format(sys.argv[0]))
         sys.exit(2)
 
@@ -39,18 +52,15 @@ def main():
 
     vault = EasyVault(vault_file, password)
     try:
-        if vault.is_encrypted():
-            print("Vault file {fn} was already encrypted".
-                  format(fn=vault_file))
-            return 0
-
-        vault.encrypt()
+        encrypted = "encrypted" if vault.is_encrypted() else "unencrypted"
+        print("Vault file {fn} is {e}".format(fn=vault_file, e=encrypted))
+        vault_obj = vault.get_yaml()
     except EasyVaultException as exc:
         print("Error: {}".format(exc))
         return 1
 
-    print("Vault file {fn} has been successfully encrypted".
-          format(fn=vault_file))
+    print("Content of YAML vault file {fn}:".format(fn=vault_file))
+    pprint(vault_obj)
     return 0
 
 
