@@ -45,7 +45,7 @@ safety>=1.9.0; python_version >= '3.5'
 # Pip 19.1.1 does not recognize that dparse 0.5.0 has dropped support for Python 3.4
 dparse>=0.4.1,<0.5.0; python_version == '2.7'
 dparse>=0.4.1,<0.5.0; python_version == '3.4'
-dparse>=0.4.1; python_version >= '3.5'
+dparse>=0.5.1; python_version >= '3.5'
 
 # PyYAML is pulled in by dparse and python-coveralls, and is already covered in
 # requirements.txt. For Python 3.4, the pip version used (19.1.1) updates
