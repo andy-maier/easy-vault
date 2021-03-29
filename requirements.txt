@@ -47,11 +47,9 @@ yamlloader>=0.5.5
 # Click 7.0 has issue #1231 on Windows which we circumvent in the test code
 # Click 7.1 has a bug with output capturing
 # Click 7.1 removed support for Python 3.4
-# Click 8.0 is incompatible with pywbemcli. See issues #816 (python 2.7 not
-#     supported) and #819 (click-repl incompatible)
-Click>=7.1.1,<8.0; python_version == '2.7'
+Click>=7.1.1; python_version == '2.7'
 Click>=7.0,<7.1; python_version == '3.4'
-Click>=7.1.1,<8.0; python_version >= '3.5'
+Click>=7.1.1; python_version >= '3.5'
 
 
 # Indirect dependencies are not specified in this file, except when needed:

@@ -11,8 +11,7 @@
 # limitations under the License.
 
 """
-Click command definition for the pywbemcli command, the top level command for
-the pywbemcli click tool
+The entry point for the easy-vault command.
 """
 
 from __future__ import absolute_import, print_function

@@ -236,7 +236,7 @@ dist_included_files := \
 # Package upgrade strategy due to reported safety issues:
 # - For packages that are direct or indirect runtime requirements, upgrade
 #   the package version only if possible w.r.t. the supported environments and
-#   if the issue affects pywbem, and add to the ignore list otherwise.
+#   if the issue affects this package, and add to the ignore list otherwise.
 # - For packages that are direct or indirect development requirements,
 #   upgrade the package version only if possible w.r.t. the supported
 #   environments and add to the ignore list otherwise.
