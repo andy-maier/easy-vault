@@ -24,8 +24,8 @@ Supported environments
 
 The **easy-vault** package is supported in these environments:
 
-* Operating Systems: Linux, Windows (native, and with UNIX-like environments),
-  macOS/OS-X
+* Operating Systems: Linux, macOS / OS-X, native Windows, Linux subsystem in
+  Windows, UNIX-like environments in Windows.
 
 * Python: 2.7, 3.4, and higher
 
@@ -48,7 +48,21 @@ prerequisite packages into the active Python environment:
 Managing the vault file
 -----------------------
 
-**TODO: Write this section: encryption, decryption, keyring, password**
+The **easy-vault** package comes with a command named "easy-vault" that is
+used to encrypt or decrypt the vault file in place:
+
+.. code-block:: bash
+
+    $ easy-vault encrypt VAULTFILE
+    $ easy-vault decrypt VAULTFILE
+
+This command displays self-explanatory help, e.g.:
+
+.. code-block:: bash
+
+    $ easy-vault --help
+    $ easy-vault encrypt --help
+    $ easy-vault decrypt --help
 
 
 .. _`Accessing the secrets in a program`:
@@ -56,42 +70,57 @@ Managing the vault file
 Accessing the secrets in a program
 ----------------------------------
 
-The following Python code demonstrates the use case of a command line utility
-that accesses the secrets in the vault:
+The **easy-vault** package provides programmatic access to the vault file,
+regardless of whether the vault file is currently encrypted or decrypted.
+See the :ref:`API Reference` for details.
+
+The following Python code demonstrates how to access the secrets in a vault file
+in YAML format:
 
 .. code-block:: python
 
-    import getpass
-    from easy_vault import EasyVault, EasyVaultException, KeyRingLib
+    import easy_vault
 
     vault_file = 'examples/vault.yml'  # Path name of Ansible vault file
 
-    keyringlib = KeyRingLib()
-    password = keyringlib.get_password(vault_file)
-    if password is None:
-        password = getpass.getpass("Enter password for vault file {fn}:".
-                                   format(fn=vault_file))
-        print("Setting password for vault file {fn} in keyring".
-              format(fn=vault_file))
-        keyringlib.set_password(vault_file, password)
-    else:
-        print("Using password for vault file {fn} from keyring".
-              format(fn=vault_file))
-
-    vault = EasyVault(vault_file, password)
+    password = easy_vault.get_password(vault_file)
+    vault = easy_vault.EasyVault(vault_file, password)
     try:
         vault_obj = vault.get_yaml()
-    except EasyVaultException as exc:
+    except easy_vault.EasyVaultException as exc:
         . . . # handle error
+    easy_vault.set_password(vault_file, password)
 
     myserver_nick = 'myserver1'        # Nickname of a secret in the vault file
 
     myserver_secrets = vault_obj['secrets'][myserver_nick]
 
     session = MySession(               # A fictitious session class
-        host=myserver_secrets['host'],
-        username=myserver_secrets['username'],
-        password=myserver_secrets['password'])
+        host=myserver_secrets['host'],            # 10.11.12.13
+        username=myserver_secrets['username'],    # myuser1
+        password=myserver_secrets['password'])    # mypass1
 
     # Do something in the server session
     . . .
+
+Here is the vault file 'examples/vault.yml' that is used in the example
+code:
+
+.. code-block:: yaml
+
+    # Example Ansible vault file
+
+    secrets:
+
+      myserver1:
+        host: 10.11.12.13
+        username: myuser1
+        password: mypass1
+
+      myserver2:
+        host: 10.11.12.14
+        username: myuser2
+        password: mypass2
+
+The vault file does not need to be in YAML format; there are access functions
+for accessing its raw content as a Byte string and as a Unicode string, too.

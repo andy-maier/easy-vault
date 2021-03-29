@@ -15,6 +15,7 @@ The KeyRingLib class.
 """
 
 from __future__ import absolute_import, print_function
+import os
 import keyring
 
 __all__ = ['KeyRingLib']
@@ -93,4 +94,5 @@ class KeyRingLib(object):
         Returns:
           :term:`unicode string`: keyring user name.
         """
-        return u'file:{fn}'.format(fn=filepath)
+        normpath = os.path.normpath(filepath)
+        return u'file:{fn}'.format(fn=normpath)

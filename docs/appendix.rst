@@ -70,6 +70,9 @@ References
 
 .. glossary::
 
+    Semantic versioning
+      `Semantic versioning 2.0 <https://semver.org/>`_
+
     Python glossary
       * `Python 2.7 Glossary <https://docs.python.org/2.7/glossary.html>`_
       * `Python 3.4 Glossary <https://docs.python.org/3.4/glossary.html>`_

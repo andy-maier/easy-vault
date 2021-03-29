@@ -28,11 +28,11 @@ can stay encrypted in the file system but can still be used by the program in
 clear text.
 
 At first use on a particular vault file, the encryption command prompts for a
-vault password and stores that in the keyring of your local system using the
-`keyring package`_. Subsequent encryption and decryption of the vault file will
-then use the key from the keyring, avoiding any further password prompts.
-Programmatic access can also be done with the password from the keyring.
-The use of the keyring can be disabled if that is desired.
+vault password and stores that in the keyring facility of your local system
+using the `keyring package`_. Subsequent encryption and decryption of the vault
+file will then use the password from the keyring, avoiding any further password
+prompts. Programmatic access can also be done with the password from the
+keyring. The use of the keyring facility can be disabled if that is desired.
 
 The encryption of the vault files is implemented using the 'fernet'
 functionality of the `cryptography package`_.
@@ -58,6 +58,14 @@ updated/added/removed.
 This package allows putting at rest the habit of having clear text files that
 contain passwords, API keys and other secrets, and allows transitioning to a
 secure but still easy to use approach for managing such secrets.
+
+Why a new vault implementation: The ansible-vault command provided the
+functionality we needed and was originally used (except for the keyring storage
+which we added). However, Ansible does not support native Windows and that
+was a requirement. Also, the ansible-vault command requires installing the
+entire Ansible which is quite large. Searching Pypi for suitable vaults
+that a) have commands for encrypting and decrypting and b) provide programmatic
+access to the encrypted file, did not reveal anything suitable.
 
 
 .. _`Documentation and change log`:

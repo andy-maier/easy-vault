@@ -21,6 +21,7 @@ from __future__ import absolute_import, print_function
 
 from ._easy_vault import *  # noqa: F403,F401
 from ._key_ring_lib import *  # noqa: F403,F401
+from ._password import *  # noqa: F403,F401
 from . import _version
 
 #: The full version of this package including any development levels, as a
