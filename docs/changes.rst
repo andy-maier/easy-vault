@@ -17,9 +17,9 @@ Change log
 ==========
 
 
-Version 0.5.0.dev1
-------------------
+Version 0.5.0
+-------------
 
-Released: not yet
+Released: 2021-03-29
 
 Initial release.
