@@ -18,9 +18,8 @@ Example script that accesses a vault file that may be encrypted or decrypted.
 
 import sys
 import os
-import getpass
 from pprint import pprint
-from easy_vault import EasyVault, EasyVaultException, KeyRingLib
+import easy_vault
 
 
 def main():
@@ -38,26 +37,16 @@ def main():
               format(fn=vault_file))
         return 1
 
-    keyringlib = KeyRingLib()
-    password = keyringlib.get_password(vault_file)
-    if password is None:
-        password = getpass.getpass("Enter password for vault file {fn}:".
-                                   format(fn=vault_file))
-        print("Setting password for vault file {fn} in keyring".
-              format(fn=vault_file))
-        keyringlib.set_password(vault_file, password)
-    else:
-        print("Using password for vault file {fn} from keyring".
-              format(fn=vault_file))
-
-    vault = EasyVault(vault_file, password)
+    password = easy_vault.get_password(vault_file)
+    vault = easy_vault.EasyVault(vault_file, password)
     try:
         encrypted = "encrypted" if vault.is_encrypted() else "unencrypted"
         print("Vault file {fn} is {e}".format(fn=vault_file, e=encrypted))
         vault_obj = vault.get_yaml()
-    except EasyVaultException as exc:
+    except easy_vault.EasyVaultException as exc:
         print("Error: {}".format(exc))
         return 1
+    easy_vault.set_password(vault_file, password)
 
     print("Content of YAML vault file {fn}:".format(fn=vault_file))
     pprint(vault_obj)
