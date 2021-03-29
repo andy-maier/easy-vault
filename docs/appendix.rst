@@ -44,12 +44,6 @@ References
 
 .. glossary::
 
-    cryptography package
-      `cryptography package on Pypi <https://pypi.org/project/cryptography/>`_
-
-    Semantic versioning
-      `Semantic versioning 2.0 <https://semver.org/>`_
-
     Python glossary
       * `Python 2.7 Glossary <https://docs.python.org/2.7/glossary.html>`_
       * `Python 3.9 Glossary <https://docs.python.org/3.9/glossary.html>`_

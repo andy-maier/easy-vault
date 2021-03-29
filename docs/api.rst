@@ -18,7 +18,7 @@ API Reference
 
 This section describes the API of the **easy-vault** package. The API is
 kept stable using the compatibility rules defined for
-:term:`semantic versioning`.
+`semantic versioning <https://semver.org/>`_.
 
 Any functions not described in this section are considered internal and may
 change incompatibly without warning.
