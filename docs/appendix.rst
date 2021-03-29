@@ -36,32 +36,6 @@ Glossary
        :class:`py3:bytes` in Python 3). Unless otherwise
        indicated, byte strings in this project are always UTF-8 encoded.
 
-    number
-       one of the number types :class:`py:int`, :class:`py2:long` (Python 2
-       only), or :class:`py:float`.
-
-    integer
-       one of the integer types :class:`py:int` or :class:`py2:long` (Python 2
-       only).
-
-    callable
-       a callable object; for example a function, a class (calling it returns a
-       new object of the class), or an object with a :meth:`~py:object.__call__`
-       method.
-
-    hashable
-       a hashable object. Hashability requires an object not only to be able to
-       produce a hash value with the :func:`py:hash` function, but in addition
-       that objects that are equal (as per the ``==`` operator) produce equal
-       hash values, and that the produced hash value remains unchanged across
-       the lifetime of the object. See `term "hashable"
-       <https://docs.python.org/3/glossary.html#term-hashable>`_
-       in the Python glossary, although the definition there is not very crisp.
-       A more exhaustive discussion of these requirements is in
-       `"What happens when you mess with hashing in Python"
-       <https://www.asmeurer.com/blog/posts/what-happens-when-you-mess-with-hashing-in-python/>`_
-       by Aaron Meurer.
-
 
 .. _`References`:
 
@@ -70,9 +44,12 @@ References
 
 .. glossary::
 
+    cryptography package
+      `cryptography package on Pypi <https://pypi.org/project/cryptography/>`_
+
     Semantic versioning
       `Semantic versioning 2.0 <https://semver.org/>`_
 
     Python glossary
       * `Python 2.7 Glossary <https://docs.python.org/2.7/glossary.html>`_
-      * `Python 3.4 Glossary <https://docs.python.org/3.4/glossary.html>`_
+      * `Python 3.9 Glossary <https://docs.python.org/3.9/glossary.html>`_

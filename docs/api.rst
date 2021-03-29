@@ -79,6 +79,10 @@ Exception classes
     :members:
     :special-members: __str__
 
+.. autoclass:: easy_vault.EasyVaultYamlError
+    :members:
+    :special-members: __str__
+
 
 .. _`Package version`:
 
