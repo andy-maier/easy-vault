@@ -18,12 +18,13 @@ from __future__ import absolute_import, print_function
 import os
 import re
 import tempfile
-import hashlib
 import base64
 
 import yaml
 import six
 from cryptography.fernet import Fernet, InvalidToken
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 __all__ = ['EasyVault', 'EasyVaultException', 'EasyVaultFileError',
            'EasyVaultDecryptError', 'EasyVaultEncryptError',
@@ -100,23 +101,22 @@ class EasyVault(object):
     file, e.g. in YAML format).
 
     There is no size limit to the vault file. However, because the complete
-    vault file is read into memory and its data is passed to the encryption and
-    decryption functions in one chunk, this implementation is not well suited
-    for handling huge files. It is really meant for vault files: Files that
-    keep secrets, but not huge data.
+    vault file is read into memory in one chunk, this implementation is not
+    well suited for handling huge files. It is really meant for vault files:
+    Files that keep secrets, but not huge data.
 
     The password is converted to a symmetric key which is then used for
     encryption and decryption of the vault file.
 
     The encryption package used by this class is pluggable. The default
-    implementation uses the :mod:`cryptography.fernet` module as an encryption
-    package, and calculates the key as urlsafe_base64(SHA256(password)).
+    implementation uses the symmetric key support from the
+    :term:`cryptography package`.
 
     Users who whish to use a different encryption package can do so by
     subclassing this class and implementing the following methods to use a
     different encryption package:
 
-    * :meth:`to_key` - Calculate a symmetric key from a password.
+    * :meth:`generate_key` - Calculate a symmetric key from a password.
     * :meth:`encrypt_data` - Encrypt clear data with a symmetric key.
     * :meth:`decrypt_data` - Decrypt encrypted data with a symmetric key.
     """
@@ -136,10 +136,11 @@ class EasyVault(object):
             raise TypeError(
                 "The password argument is not a unicode string, but: {t}".
                 format(t=type(password)))
-        key = self.to_key(password)
+        key = self.generate_key(password)
         if not isinstance(key, six.binary_type):
             raise TypeError(
-                "The return value of to_key() is not a byte string, but: {t}".
+                "The return value of generate_key() is not a byte string, "
+                "but: {t}".
                 format(t=type(key)))
         self._key = key
 
@@ -359,20 +360,20 @@ class EasyVault(object):
         return data_obj
 
     @staticmethod
-    def to_key(password):
+    def generate_key(password):
         """
         Encryption implementation: Calculate a symmetric key from a password.
 
         The key must match the requirements of the encryption package that is
         used in the :meth:`encrypt_data` and :meth:`decrypt_data` methods.
 
-        The same password must result in the same key, and different passwords
-        should result in different keys.
+        Using this method repeatedly on the same password must result in the
+        same key.
 
         This method can be overwritten by users to use a different encryption
-        package. Its default implementation uses the :mod:`cryptography.fernet`
-        encryption package and calculates the key as
-        urlsafe_base64(SHA256(password)).
+        package. Its default implementation uses the
+        :term:`cryptography package`, and calculates the key as a 256-bit key
+        using 10000 iterations of SHA256 on the password, using a fixed salt.
 
         Parameters:
 
@@ -382,11 +383,16 @@ class EasyVault(object):
         Returns:
           :term:`byte string`: The calculated key.
         """
-        m = hashlib.sha256()
-        m.update(password.encode('utf-8'))
-        key_bytes = m.digest()  # binary string of 32 Bytes
-        key_base64 = base64.urlsafe_b64encode(key_bytes)
-        return key_base64
+        # TODO: Move to random salt, e.g. os.urandom(16). This requires storing
+        #       the key in the keyring instead of the password and requires
+        #       managing the keys on behalf of the user.
+        salt = b'fixed'
+        bpassword = password.encode('utf-8')
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(), length=32, salt=salt, iterations=100000)
+        key = base64.urlsafe_b64encode(kdf.derive(bpassword))
+        print("Debug: password={}, key={!r}".format(password, key))
+        return key
 
     @staticmethod
     def encrypt_data(clear_data, key):
