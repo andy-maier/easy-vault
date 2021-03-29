@@ -32,9 +32,9 @@ vault password and stores that in the keyring facility of your local system
 using the `keyring package`_. Subsequent encryption and decryption of the vault
 file will then use the password from the keyring, avoiding any further password
 prompts. Programmatic access can also be done with the password from the
-keyring. The use of the keyring facility can be disabled if that is desired.
+keyring.
 
-The encryption of the vault files is implemented using the 'fernet'
+The encryption of the vault files is implemented using the symmetric key
 functionality of the `cryptography package`_.
 
 One use case for this package is for example the daily work with programs that
