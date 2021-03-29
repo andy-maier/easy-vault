@@ -25,6 +25,7 @@ from ._common_options import add_options, help_option, prompt_option
 from .._version import __version__ as cli_version
 from .._key_ring_lib import KeyRingLib
 from .._easy_vault import EasyVault, EasyVaultException
+from .._password import get_password, set_password
 
 
 @click.group()
