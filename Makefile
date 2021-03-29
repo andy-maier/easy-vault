@@ -137,7 +137,7 @@ project_name := easy-vault
 
 # Name of this Python package
 package_name := easy_vault
-package_name_tar := easy_vault
+package_name_tar := easy-vault
 
 # Directory for coverage html output. Not used right now. If used, must be in
 # sync with the one in .coveragerc.
