@@ -72,5 +72,5 @@ access to the encrypted file, did not reveal anything suitable.
 
 .. # Links:
 
-.. _`keyring package`: https://pypi.org/project/keyring/
-.. _`cryptography package`: https://pypi.org/project/cryptography/
+.. _`keyring package`: https://github.com/jaraco/keyring/blob/main/README.rst
+.. _`cryptography package`: https://cryptography.io/en/stable/

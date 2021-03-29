@@ -111,7 +111,7 @@ class EasyVault(object):
 
     The encryption package used by this class is pluggable. The default
     implementation uses the symmetric key support from the
-    `cryptography package <https://pypi.org/project/cryptography/>`_.
+    `cryptography package <https://cryptography.io/en/stable/>`_.
 
     Users who whish to use a different encryption package can do so by
     subclassing this class and implementing the following methods to use a
@@ -373,7 +373,7 @@ class EasyVault(object):
 
         This method can be overwritten by users to use a different encryption
         package. Its default implementation uses the
-        `cryptography package <https://pypi.org/project/cryptography/>`_,
+        `cryptography package <https://cryptography.io/en/stable/>`_,
         and calculates the key as a 256-bit key using 10000 iterations of
         SHA256 on the password, using a fixed salt.
 

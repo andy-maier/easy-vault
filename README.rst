@@ -88,5 +88,5 @@ The **easy-vault** package is provided under the
 
 .. _`Documentation`: https://easy-vault.readthedocs.io/en/latest/
 .. _`Change log`: https://easy-vault.readthedocs.io/en/latest/changes.html
-.. _`keyring package`: https://pypi.org/project/keyring/
-.. _`cryptography package`: https://pypi.org/project/cryptography/
+.. _`keyring package`: https://github.com/jaraco/keyring/blob/main/README.rst
+.. _`cryptography package`: https://cryptography.io/en/stable/
