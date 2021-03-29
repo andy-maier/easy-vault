@@ -61,6 +61,21 @@ jobs:
                 \"os\": \"windows-latest\", \
                 \"python-version\": \"3.4\", \
                 \"package_level\": \"latest\" \
+              }, \
+              { \
+                \"os\": \"windows-latest\", \
+                \"python-version\": \"3.6\", \
+                \"package_level\": \"minimum\" \
+              }, \
+              { \
+                \"os\": \"windows-latest\", \
+                \"python-version\": \"3.7\", \
+                \"package_level\": \"minimum\" \
+              }, \
+              { \
+                \"os\": \"windows-latest\", \
+                \"python-version\": \"3.8\", \
+                \"package_level\": \"minimum\" \
               } \
             ], \
             \"include\": [ \
