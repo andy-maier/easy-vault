@@ -21,7 +21,9 @@ import keyring
 __all__ = ['KeyRingLib']
 
 
-KEYRING_SERVICE = u'easy_vault'    # Must be unique within keyring facility
+# Data stored in keyring enzry, by version:
+#   1.0: The item stored is the password
+KEYRING_SERVICE = u'easy_vault/pypi.org/1.0'    # Must be unique within keyring
 
 
 class KeyRingLib(object):
@@ -30,6 +32,9 @@ class KeyRingLib(object):
 
     An object of this class is tied to the local keyring facility and can
     store and retrieve multiple vault passwords, one for each vault file.
+
+    The keyring items that are created have a service name that starts with
+    'easy_vault'. There is one keyring item for each vault file.
     """
 
     def get_password(self, filepath):
@@ -72,7 +77,7 @@ class KeyRingLib(object):
         """
         Return the service name that is used for the :mod:`keyring` module.
 
-        That name is fixed within easy-vault and is ``"easy_vault"``.
+        That name is fixed within easy-vault and starts with 'easy_vault'.
 
         Returns:
           :term:`unicode string`: keyring service name.
@@ -88,11 +93,12 @@ class KeyRingLib(object):
         each different vault file uses a different entry in the keyring.
 
         Parameters:
+
           filepath (:term:`unicode string`):
             Path name of the vault file.
 
         Returns:
           :term:`unicode string`: keyring user name.
         """
-        normpath = os.path.normpath(filepath)
+        normpath = os.path.abspath(filepath)
         return u'file:{fn}'.format(fn=normpath)
