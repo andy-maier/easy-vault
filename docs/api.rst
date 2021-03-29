@@ -16,7 +16,12 @@
 API Reference
 =============
 
-This section describes the API of the **easy-vault** package.
+This section describes the API of the **easy-vault** package. The API is
+kept stable using the compatibility rules defined for
+:term:`semantic versioning`.
+
+Any functions not described in this section are considered internal and may
+change incompatibly without warning.
 
 
 .. _`EasyVault class`:
@@ -41,6 +46,16 @@ KeyRingLib class
     :autosummary:
     :autosummary-inherited-members:
     :special-members: __str__
+
+
+.. _`Password functions`:
+
+Password functions
+------------------
+
+.. autofunction:: easy_vault.get_password
+
+.. autofunction:: easy_vault.set_password
 
 
 .. _`Exception classes`:

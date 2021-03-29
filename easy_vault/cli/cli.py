@@ -52,7 +52,9 @@ def cli_encrypt(context, vaultfile, **options):
     Encrypt a vault file, if not yet encrypted.
     """
     check_exists(vaultfile)
-    password = get_password(vaultfile, options['prompt'])
+    use_keyring = not options['prompt']
+    password = get_password(
+        vaultfile, use_keyring=use_keyring, verbose=True, echo=click.echo)
     vault = EasyVault(vaultfile, password)
     try:
         if vault.is_encrypted():
@@ -64,7 +66,7 @@ def cli_encrypt(context, vaultfile, **options):
         raise click.ClickException(str(exc))
     click.echo("Vault file has been successfully encrypted: {fn}".
                format(fn=vaultfile))
-    set_password(vaultfile, password)
+    set_password(vaultfile, password, verbose=True, echo=click.echo)
 
 
 @cli.command('decrypt')
@@ -77,7 +79,9 @@ def cli_decrypt(context, vaultfile, **options):
     Decrypt a vault file, if encrypted.
     """
     check_exists(vaultfile)
-    password = get_password(vaultfile, options['prompt'])
+    use_keyring = not options['prompt']
+    password = get_password(
+        vaultfile, use_keyring=use_keyring, verbose=True, echo=click.echo)
     vault = EasyVault(vaultfile, password)
     try:
         if not vault.is_encrypted():
@@ -89,35 +93,10 @@ def cli_decrypt(context, vaultfile, **options):
         raise click.ClickException(str(exc))
     click.echo("Vault file has been successfully decrypted: {fn}".
                format(fn=vaultfile))
-    set_password(vaultfile, password)
+    set_password(vaultfile, password, verbose=True, echo=click.echo)
 
 
 def check_exists(vaultfile):
     if not os.path.exists(vaultfile):
         raise click.ClickException(
             "Vault file does not exist: {fn}".format(fn=vaultfile))
-
-
-def get_password(vaultfile, prompt):
-    keyringlib = KeyRingLib()
-    if prompt:
-        return getpass.getpass("Enter password for vault file {fn}:".
-                               format(fn=vaultfile))
-
-    password = keyringlib.get_password(vaultfile)
-    if password is None:
-        return getpass.getpass("Enter password for vault file {fn}:".
-                               format(fn=vaultfile))
-
-    click.echo("Using password from keyring for vault file: {fn}".
-               format(fn=vaultfile))
-    return password
-
-
-def set_password(vaultfile, password):
-    keyringlib = KeyRingLib()
-    current_password = keyringlib.get_password(vaultfile)
-    if current_password is None or password != current_password:
-        click.echo("Setting password in keyring for vault file: {fn}".
-                   format(fn=vaultfile))
-        keyringlib.set_password(vaultfile, password)
