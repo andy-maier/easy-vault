@@ -79,15 +79,17 @@ TESTCASES_VAULT_INIT = [
         TypeError, None, True
     ),
     (
-        "Omitted required parameter: password",
+        "Omitted optional parameter: password",
         dict(
             init_args=(),
             init_kwargs=dict(
                 filepath=TEST_VAULT_FILEPATH,
             ),
-            exp_attrs=None,
+            exp_attrs={
+                'filepath': TEST_VAULT_FILEPATH,
+            },
         ),
-        TypeError, None, True
+        None, None, True
     ),
     (
         "Vault file does not exist (no error at init time)",

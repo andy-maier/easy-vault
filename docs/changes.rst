@@ -28,19 +28,28 @@ Released: not yet
   not added at the end of the parameter list. This is incompatible for users
   who called the function with positional arguments. (related to issue #20)
 
+* The '--prompt' option of the 'easy-vault encrypt' and 'easy-vault decrypt'
+  commands was removed. (related to issue #20)
+
 **Deprecations:**
 
 **Bug fixes:**
 
 **Enhancements:**
 
-* Added more user control for the handling of passwords: The 'EasyVault' class
-  now accepts that the password is not provided and in that case is restricted
-  to operate on unencrypted vault files. The 'get_password()' function got an
-  additional 'use_prompting' parameter that can be used to disable the
-  interactive prompting for passwords. (issue #20)
+* In the 'EasyVault' class, added more user control for the handling of
+  passwords: The init method now accepts if the password is not provided and in
+  that case is restricted to operate on decrypted vault files.
+  The 'easy_vault.get_password()' function got an additional 'use_prompting'
+  parameter that can be used to disable the interactive prompting for
+  passwords. (issue #20)
 
-* Docs: Improved the documentation in many places.
+* In the 'easy-vault encrypt' and 'easy-vault decrypt' commands, removed the
+  '--prompt' option and added options '--set-password' and '--no-keyring' to
+  better separate the two concerns of setting a new password and disabling the
+  use of the keyring service. (issue #20)
+
+* Docs: Improved the documentation and command messages in many places.
 
 **Cleanup:**
 

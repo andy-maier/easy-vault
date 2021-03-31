@@ -21,11 +21,6 @@ import click
 help_option = [  # pylint: disable=invalid-name
     click.help_option('-h', '--help', help=u'Show this help message.')]
 
-prompt_option = [  # pylint: disable=invalid-name
-    click.option('-p', '--prompt', is_flag=True, default=False,
-                  help=u'Prompt for password even if found in keyring. '
-                  u'Default: False')]
-
 
 def add_options(options):
     """

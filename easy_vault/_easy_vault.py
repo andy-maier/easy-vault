@@ -128,7 +128,7 @@ class EasyVault(object):
     * :meth:`decrypt_data` - Decrypt encrypted data with a symmetric key.
     """
 
-    def __init__(self, filepath, password):
+    def __init__(self, filepath, password=None):
         """
         Parameters:
 
