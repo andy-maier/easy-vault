@@ -11,7 +11,8 @@
 # limitations under the License.
 
 """
-Convenience functions for getting and setting the password in the keyring.
+Convenience functions for getting and setting the password in the
+keyring service.
 """
 
 from __future__ import absolute_import, print_function
@@ -22,91 +23,115 @@ from ._key_ring_lib import KeyRingLib
 __all__ = ['get_password', 'set_password']
 
 
-def get_password(filepath, use_keyring=True, verbose=False, echo=print):
+def get_password(
+        filepath, use_keyring=True, use_prompting=True, verbose=False,
+        echo=print):
     """
-    Get the vault password from the keyring or by prompting for it.
+    Get the password for a vault file from the keyring service and if not found
+    there, by interactively prompting for it.
 
-    This is a convenience function that uses the :class:`~easy_vault.KeyRingLib`
-    class.
+    The use of the keyring service and the use of password prompting can be
+    individually disabled, but at least one of them must be enabled.
 
-    In non-keyring mode, the keyring is not used, and the password is always
-    prompted for.
-
-    In keyring mode, the password is attempted to be obtained from the keyring
-    and is prompted for if not available there.
+    This is a convenience function that uses the password methods of the
+    :class:`~easy_vault.KeyRingLib` class.
 
     Parameters:
 
       filepath (:term:`unicode string`):
-        Path name of the vault file.
+        Path name of the vault file. It will be normalized to identify the
+        keyring item for the vault file.
 
       use_keyring (bool):
-        Use keyring mode (`True`) or non-keyring mode (`False`).
+        Enable the use of the keyring service for getting the password.
+
+      use_prompting (bool):
+        Enable the use of password prompting for getting the password.
 
       verbose (bool):
-        Print additional messages. Note that the password prompt is always
-        displayed.
+        Print additional messages about where the password comes from.
 
       echo (function):
         Print function to be used for the additional messages in verbose mode.
 
     Returns:
       :term:`unicode string`: Password for the vault file.
+
+    Raises:
+      :exc:`keyring:keyring.errors.NoKeyringError`: No keyring service
+        available
+      :exc:`keyring:keyring.errors.KeyringError`: Base class for errors with
+        the keyring service
+      ValueError: use_keyring and use_prompt were both False
     """
-    keyringlib = KeyRingLib()
+    password = None
 
-    if not use_keyring:
-        return getpass.getpass("Enter password for vault file {fn}:".
-                               format(fn=filepath))
+    if use_keyring:
+        keyringlib = KeyRingLib()
+        password = keyringlib.get_password(filepath)
+        if password is not None:
+            if verbose:
+                echo("Using password from keyring service for vault file: {fn}".
+                     format(fn=filepath))
+            return password
 
-    password = keyringlib.get_password(filepath)
-    if password is None:
-        return getpass.getpass("Enter password for vault file {fn}:".
-                               format(fn=filepath))
+    if use_prompting:
+        password = getpass.getpass(
+            "Enter password for vault file {fn}:".format(fn=filepath))
+        if verbose:
+            echo("Using prompted password for vault file: {fn}".
+                 format(fn=filepath))
+        return password
 
-    if verbose:
-        echo("Using password from keyring for vault file: {fn}".
-             format(fn=filepath))
-    return password
+    raise ValueError("use_keyring and use_prompt were both False")
 
 
 def set_password(
         filepath, password, use_keyring=True, verbose=False, echo=print):
     """
-    Set the password in the keyring.
+    Set the password for a vault file in the keyring service.
 
-    This is a convenience function that uses the :class:`~easy_vault.KeyRingLib`
-    class.
+    For consistency with :func:`get_password`, the use of the keyring service
+    can be disabled, in which case the function does nothing.
 
-    In non-keyring mode, this function does nothing.
-
-    In keyring mode, the password is stored in the keyring. This is done by
-    first getting it, and setting it only if it was not set or was different.
-    This approach has been chosen in order to print the verbose message
-    about setting the password only if it was really changed.
+    This is a convenience function that uses the password methods of the
+    :class:`~easy_vault.KeyRingLib` class.
 
     Parameters:
 
       filepath (:term:`unicode string`):
-        Path name of the vault file.
+        Path name of the vault file. It will be normalized to identify the
+        keyring item for the vault file.
 
       password (:term:`unicode string`):
         Password for the vault file.
 
       use_keyring (bool):
-        Use keyring mode (`True`) or non-keyring mode (`False`).
+        Enable the use of the keyring service for setting the password.
 
       verbose (bool):
-        Print additional messages.
+        Print additional messages about changes to the password in the
+        keyring service.
 
       echo (function):
         Print function to be used for the additional messages in verbose mode.
+
+    Raises:
+      :exc:`keyring:keyring.errors.NoKeyringError`: No keyring service
+        available
+      :exc:`keyring:keyring.errors.KeyringError`: Base class for errors with
+        the keyring service
     """
     if use_keyring:
         keyringlib = KeyRingLib()
         current_password = keyringlib.get_password(filepath)
-        if current_password is None or password != current_password:
+        if current_password is None:
             if verbose:
-                echo("Setting password in keyring for vault file: {fn}".
-                     format(fn=filepath))
+                echo("Setting new password in keyring service for vault "
+                     "file: {fn}".format(fn=filepath))
+            keyringlib.set_password(filepath, password)
+        elif password != current_password:
+            if verbose:
+                echo("Updating password in keyring service for vault "
+                     "file: {fn}".format(fn=filepath))
             keyringlib.set_password(filepath, password)

@@ -56,7 +56,8 @@ class EasyVaultException(Exception):
 
 class EasyVaultFileError(EasyVaultException):
     """
-    Exception indicating file I/O errors with a vault file.
+    Exception indicating file I/O errors with a vault file or with a temporary
+    file (that is used when writing the vault file).
 
     Derived from :exc:`EasyVaultException`.
     """
@@ -106,8 +107,13 @@ class EasyVault(object):
     well suited for handling huge files. It is really meant for vault files:
     Files that keep secrets, but not huge data.
 
-    The password is converted to a symmetric key which is then used for
-    encryption and decryption of the vault file.
+    The password may be provided or not (`None`). If not provided, encryption
+    and decryption of the vault file is going to be rejected and access to the
+    data requires that the vault file is unencrypted. If the password is
+    provided, it is converted to a symmetric key which is then used for
+    encryption and decryption of the vault file and for decrypting the vault
+    file content upon access (the vault file in the file system remains
+    encrypted).
 
     The encryption package used by this class is pluggable. The default
     implementation uses the symmetric key support from the
@@ -130,20 +136,24 @@ class EasyVault(object):
             Path name of the vault file.
 
           password (:term:`unicode string`):
-            Password for encrypting and decrypting the vault file.
+            Password for encrypting and decrypting the vault file, or `None`
+            if not provided.
         """
         self._filepath = filepath
-        if not isinstance(password, six.string_types):
-            raise TypeError(
-                "The password argument is not a unicode string, but: {t}".
-                format(t=type(password)))
-        key = self.generate_key(password)
-        if not isinstance(key, six.binary_type):
-            raise TypeError(
-                "The return value of generate_key() is not a byte string, "
-                "but: {t}".
-                format(t=type(key)))
-        self._key = key
+        if password is None:
+            self._key = None
+        else:
+            if not isinstance(password, six.string_types):
+                raise TypeError(
+                    "The password argument is not a unicode string, but: {t}".
+                    format(t=type(password)))
+            key = self.generate_key(password)
+            if not isinstance(key, six.binary_type):
+                raise TypeError(
+                    "The return value of generate_key() is not a byte string, "
+                    "but: {t}".
+                    format(t=type(key)))
+            self._key = key
 
     @property
     def filepath(self):
@@ -152,6 +162,13 @@ class EasyVault(object):
         """
         return self._filepath
 
+    @property
+    def password_provided(self):
+        """
+        bool: Indicates whether a vault password was provided.
+        """
+        return self._key is not None
+
     def is_encrypted(self):
         """
         Test whether the vault file is encrypted by easy-vault.
@@ -159,14 +176,15 @@ class EasyVault(object):
         This is done by checking for the unique easy-vault header in the first
         line of the vault file.
 
+        This method does not require a vault password to be provided.
+
         Returns:
           bool: Boolean indicating whether the vault file is encrypted by
           easy-vault.
 
         Raises:
-          EasyVaultFileError: Error with the vault file
+          EasyVaultFileError: I/O error with the vault file
         """
-
         try:
             with open(self._filepath, 'rb') as fp:
                 first_bline = fp.readline()  # Including trailing newline
@@ -175,7 +193,7 @@ class EasyVault(object):
                 "Cannot open vault file {fn} for reading: {exc}".
                 format(fn=self._filepath, exc=exc))
             new_exc.__cause__ = None
-            raise new_exc  # VaultFileOpenError
+            raise new_exc  # EasyVaultFileError
 
         m = HEADER_PATTERN.match(first_bline)
         if m is None:
@@ -190,10 +208,17 @@ class EasyVault(object):
 
         The vault file must be unencrypted (i.e. not encrypted by easy-vault).
 
+        This method requires a vault password to be provided.
+
         Raises:
-          EasyVaultFileError: Error with the vault file or a temporary file
+          EasyVaultFileError: I/O error with the vault file or a temporary file
           EasyVaultEncryptError: Error encrypting the vault file
         """
+        if not self.password_provided:
+            raise EasyVaultEncryptError(
+                "Cannot encrypt vault file {fn}: "
+                "No password was provided".
+                format(fn=self._filepath))
 
         try:
             with open(self._filepath, 'rb', encoding=None) as fp:
@@ -231,8 +256,10 @@ class EasyVault(object):
 
         The vault file must be encrypted by easy-vault.
 
+        This method requires a vault password to be provided.
+
         Raises:
-          EasyVaultFileError: Error with the vault file or a temporary file
+          EasyVaultFileError: I/O error with the vault file or a temporary file
           EasyVaultDecryptError: Error decrypting the vault file
         """
         clear_bdata = self._get_bytes_from_encrypted()
@@ -240,15 +267,20 @@ class EasyVault(object):
 
     def _get_bytes_from_encrypted(self):
         """
-        Get the unencrypted data from an encrypted vault file.
+        Get the data from an encrypted vault file.
 
         Returns:
           :term:`byte string`: Unencrypted data from the vault file.
 
         Raises:
-          EasyVaultFileError: Error with the vault file
+          EasyVaultFileError: I/O error with the vault file
           EasyVaultDecryptError: Error decrypting the vault file
         """
+        if not self.password_provided:
+            raise EasyVaultDecryptError(
+                "Cannot decrypt vault file {fn}: "
+                "No password was provided".
+                format(fn=self._filepath))
 
         try:
             with open(self._filepath, 'rb') as fp:
@@ -285,7 +317,7 @@ class EasyVault(object):
           :term:`byte string`: Unencrypted data from the vault file.
 
         Raises:
-          EasyVaultFileError: Error with the vault file
+          EasyVaultFileError: I/O error with the vault file
         """
         try:
             with open(self._filepath, 'rb') as fp:
@@ -304,12 +336,15 @@ class EasyVault(object):
 
         The vault file may be encrypted or unencrypted.
 
+        If the vault file is encrypted, this method requires a vault password
+        to be provided, otherwise it does not.
+
         Returns:
           :term:`byte string`: Unencrypted content of the vault file, as a Byte
           sequence.
 
         Raises:
-          EasyVaultFileError: Error with the vault file
+          EasyVaultFileError: I/O error with the vault file
           EasyVaultDecryptError: Error decrypting the vault file
         """
         if self.is_encrypted():
@@ -322,12 +357,15 @@ class EasyVault(object):
 
         The vault file may be encrypted or unencrypted.
 
+        If the vault file is encrypted, this method requires a vault password
+        to be provided, otherwise it does not.
+
         Returns:
           :term:`unicode string`: Unencrypted content of the vault file, as a
           Unicode string.
 
         Raises:
-          EasyVaultFileError: Error with the vault file
+          EasyVaultFileError: I/O error with the vault file
           EasyVaultDecryptError: Error decrypting the vault file
         """
         bdata = self.get_bytes()
@@ -341,11 +379,14 @@ class EasyVault(object):
 
         The vault file may be encrypted or unencrypted.
 
+        If the vault file is encrypted, this method requires a vault password
+        to be provided, otherwise it does not.
+
         Returns:
           dict or list: Top-level object of the YAML-formatted vault file.
 
         Raises:
-          EasyVaultFileError: Error with the vault file or a temporary file
+          EasyVaultFileError: I/O error with the vault file or a temporary file
           EasyVaultYamlError: YAML syntax error in the vault file
           EasyVaultDecryptError: Error decrypting the vault file
         """
@@ -470,7 +511,7 @@ def write_file(filepath, data):
         The data to be written.
 
     Raises:
-      EasyVaultFileError: Error with the vault file or a temporary file
+      EasyVaultFileError: I/O error with the file
     """
     assert isinstance(data, six.binary_type), type(data)
     try:

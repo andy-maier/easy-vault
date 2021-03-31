@@ -124,3 +124,23 @@ code:
 
 The vault file does not need to be in YAML format; there are access functions
 for accessing its raw content as a Byte string and as a Unicode string, too.
+
+
+.. _`Keyring service`:
+
+Keyring service
+----------------
+
+The **easy-vault** package accesses the keyring service of the local system
+via the `keyring package`_. That package supports a number of different
+keyring services and can be configured to use alternate keyring services.
+
+By default, the following keyring services are active and will be used by
+the keyring package:
+
+* On macOS: `Keychain <https://en.wikipedia.org/wiki/Keychain_%28software%29>`_
+* On Linux: depends
+* On Windows: `Credential Locker <https://docs.microsoft.com/en-us/windows/uwp/security/credential-locker>`_
+
+.. # Links:
+.. _`keyring package`: https://github.com/jaraco/keyring/blob/main/README.rst
