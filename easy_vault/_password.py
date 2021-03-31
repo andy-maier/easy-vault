@@ -71,16 +71,12 @@ def get_password(
         password = keyringlib.get_password(filepath)
         if password is not None:
             if verbose:
-                echo("Using password from keyring service for vault file: {fn}".
-                     format(fn=filepath))
+                echo("Using password from keyring service")
             return password
 
     if use_prompting:
         password = getpass.getpass(
             "Enter password for vault file {fn}:".format(fn=filepath))
-        if verbose:
-            echo("Using prompted password for vault file: {fn}".
-                 format(fn=filepath))
         return password
 
     raise ValueError("use_keyring and use_prompt were both False")
@@ -127,11 +123,9 @@ def set_password(
         current_password = keyringlib.get_password(filepath)
         if current_password is None:
             if verbose:
-                echo("Setting new password in keyring service for vault "
-                     "file: {fn}".format(fn=filepath))
+                echo("Setting new password in keyring service")
             keyringlib.set_password(filepath, password)
         elif password != current_password:
             if verbose:
-                echo("Updating password in keyring service for vault "
-                     "file: {fn}".format(fn=filepath))
+                echo("Updating password in keyring service")
             keyringlib.set_password(filepath, password)

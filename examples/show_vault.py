@@ -26,7 +26,7 @@ def main():
     """Main function"""
 
     if len(sys.argv) < 2:
-        print("Show content of a vault file.")
+        print("Show content of a YAML vault file.")
         print("Usage: {} vaultfile".format(sys.argv[0]))
         sys.exit(2)
 
@@ -40,8 +40,9 @@ def main():
     password = easy_vault.get_password(vault_file)
     vault = easy_vault.EasyVault(vault_file, password)
     try:
-        encrypted = "encrypted" if vault.is_encrypted() else "unencrypted"
-        print("Vault file {fn} is {e}".format(fn=vault_file, e=encrypted))
+        encrypted = "encrypted" if vault.is_encrypted() else "decrypted"
+        print("Vault file {fn} is in {e} state".
+              format(fn=vault_file, e=encrypted))
         vault_obj = vault.get_yaml()
     except easy_vault.EasyVaultException as exc:
         print("Error: {}".format(exc))
