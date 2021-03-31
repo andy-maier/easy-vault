@@ -21,7 +21,7 @@ import sys
 import getpass
 import click
 
-from ._common_options import add_options, help_option, prompt_option
+from ._common_options import add_options, help_option
 from .._version import __version__ as cli_version
 from .._key_ring_lib import KeyRingLib
 from .._easy_vault import EasyVault, EasyVaultException
@@ -44,56 +44,137 @@ def cli(ctx):
 
 @cli.command('encrypt')
 @click.argument('vaultfile', type=str, metavar='VAULTFILE', required=True)
-@add_options(prompt_option)
+@click.option('-p', '--set-password', is_flag=True, default=False,
+              help=u'Set a new password if the file needs to be encrypted. '
+              u'Mutually exclusive with --no-keyring')
+@click.option('-n', '--no-keyring', is_flag=True, default=False,
+              help=u'Do not use the keyring service. '
+              u'Mutually exclusive with --set-password')
 @add_options(help_option)
 @click.pass_obj
 def cli_encrypt(context, vaultfile, **options):
     """
     Encrypt a vault file, if not yet encrypted.
+
+    If the vault file is already encrypted, nothing is done.
+
+    If the vault file is currently decrypted, by default the keyring service is
+    contacted to see whether it has a password stored for this vault file.
+    If so, that password is used for encrypting the vault file.
+    Otherwise, a password is prompted for, and that password is used for
+    encrypting the vault file and is stored in the keyring service for future
+    use as the password for this vault file.
+
+    If the keyring service is chosen not to be used, the password is always
+    prompted for and the keyring service is not contacted at all.
+
+    If a new password is chosen to be set, that password is used for encrypting
+    the vault file and is stored in the keyring service for future use as the
+    password for this vault file, overwriting a possibly existing previous
+    password.
+
+    Note that these two choices are mutually exclusive.
     """
+    verbose = True
+    set_pass = options['set_password']
+    no_keyring = options['no_keyring']
+    if set_pass and no_keyring:
+        raise click.ClickException(
+            "The --set-password and --no-keyring options are mutually "
+            "exclusive")
+
     check_exists(vaultfile)
-    use_keyring = not options['prompt']
-    password = get_password(
-        vaultfile, use_keyring=use_keyring, verbose=True, echo=click.echo)
+
+    if EasyVault(vaultfile).is_encrypted():
+        if verbose:
+            click.echo("Success! Vault file had already been encrypted")
+        return
+
+    if set_pass:
+        password = get_password(vaultfile, use_keyring=False,
+                                verbose=verbose, echo=click.echo)
+    else:
+        password = get_password(vaultfile, use_keyring=not no_keyring,
+                                verbose=verbose, echo=click.echo)
+
     vault = EasyVault(vaultfile, password)
     try:
-        if vault.is_encrypted():
-            click.echo("Vault file was already encrypted: {fn}".
-                       format(fn=vaultfile))
-            return
         vault.encrypt()
     except EasyVaultException as exc:
         raise click.ClickException(str(exc))
-    click.echo("Vault file has been successfully encrypted: {fn}".
-               format(fn=vaultfile))
-    set_password(vaultfile, password, verbose=True, echo=click.echo)
+    if verbose:
+        click.echo("Success! Vault file has just been encrypted")
+
+    set_password(vaultfile, password, use_keyring=not no_keyring,
+                 verbose=verbose, echo=click.echo)
 
 
 @cli.command('decrypt')
 @click.argument('vaultfile', type=str, metavar='VAULTFILE', required=True)
-@add_options(prompt_option)
+@click.option('-p', '--set-password', is_flag=True, default=False,
+              help=u'Set a new password if the file needs to be decrypted. '
+              u'Mutually exclusive with --no-keyring')
+@click.option('-n', '--no-keyring', is_flag=True, default=False,
+              help=u'Do not use the keyring service. '
+              u'Mutually exclusive with --set-password')
 @add_options(help_option)
 @click.pass_obj
 def cli_decrypt(context, vaultfile, **options):
     """
     Decrypt a vault file, if encrypted.
+
+    If the vault file is already decrypted, nothing is done.
+
+    If the vault file is currently encrypted, by default the keyring service is
+    contacted to see whether it has a password stored for this vault file.
+    If so, that password is used for decrypting the vault file.
+    Otherwise, a password is prompted for, and that password is used for
+    decrypting the vault file and is stored in the keyring service for future
+    use as the password for this vault file.
+
+    If the keyring service is chosen not to be used, the password is always
+    prompted for and the keyring service is not contacted at all.
+
+    If a new password is chosen to be set, that password is used for decrypting
+    the vault file and is stored in the keyring service for future use as the
+    password for this vault file, overwriting a possibly existing previous
+    password.
+
+    Note that these two choices are mutually exclusive.
     """
+
+    verbose = True
+    set_pass = options['set_password']
+    no_keyring = options['no_keyring']
+    if set_pass and no_keyring:
+        raise click.ClickException(
+            "The --set-password and --no-keyring options are mutually "
+            "exclusive")
+
     check_exists(vaultfile)
-    use_keyring = not options['prompt']
-    password = get_password(
-        vaultfile, use_keyring=use_keyring, verbose=True, echo=click.echo)
+
+    if not EasyVault(vaultfile).is_encrypted():
+        if verbose:
+            click.echo("Success! Vault file had already been decrypted")
+        return
+
+    if set_pass:
+        password = get_password(vaultfile, use_keyring=False,
+                                verbose=verbose, echo=click.echo)
+    else:
+        password = get_password(vaultfile, use_keyring=not no_keyring,
+                                verbose=verbose, echo=click.echo)
+
     vault = EasyVault(vaultfile, password)
     try:
-        if not vault.is_encrypted():
-            click.echo("Vault file was already decrypted: {fn}".
-                       format(fn=vaultfile))
-            return
         vault.decrypt()
     except EasyVaultException as exc:
         raise click.ClickException(str(exc))
-    click.echo("Vault file has been successfully decrypted: {fn}".
-               format(fn=vaultfile))
-    set_password(vaultfile, password, verbose=True, echo=click.echo)
+    if verbose:
+        click.echo("Success! Vault file has just been decrypted")
+
+    set_password(vaultfile, password, use_keyring=not no_keyring,
+                 verbose=verbose, echo=click.echo)
 
 
 def check_exists(vaultfile):
