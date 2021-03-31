@@ -24,11 +24,23 @@ Released: not yet
 
 **Incompatible changes:**
 
+* The new optional 'use_prompting' parameter of 'easy_vault.get_password()' was
+  not added at the end of the parameter list. This is incompatible for users
+  who called the function with positional arguments. (related to issue #20)
+
 **Deprecations:**
 
 **Bug fixes:**
 
 **Enhancements:**
+
+* Added more user control for the handling of passwords: The 'EasyVault' class
+  now accepts that the password is not provided and in that case is restricted
+  to operate on unencrypted vault files. The 'get_password()' function got an
+  additional 'use_prompting' parameter that can be used to disable the
+  interactive prompting for passwords. (issue #20)
+
+* Docs: Improved the documentation in many places.
 
 **Cleanup:**
 

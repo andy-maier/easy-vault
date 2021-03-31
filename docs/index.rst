@@ -21,7 +21,7 @@ can stay encrypted in the file system but can still be used by the program in
 clear text.
 
 At first use on a particular vault file, the encryption command prompts for a
-vault password and stores that in the keyring facility of your local system
+vault password and stores that in the keyring service of your local system
 using the `keyring package`_. Subsequent encryption and decryption of the vault
 file will then use the password from the keyring, avoiding any further password
 prompts. Programmatic access can also be done with the password from the
