@@ -75,7 +75,7 @@ class EasyVaultDecryptError(EasyVaultException):
 
 class EasyVaultEncryptError(EasyVaultException):
     """
-    Exception indicating that an unencrypted vault file could not be encrypted.
+    Exception indicating that a decrypted vault file could not be encrypted.
 
     Derived from :exc:`EasyVaultException`.
     """
@@ -107,13 +107,13 @@ class EasyVault(object):
     well suited for handling huge files. It is really meant for vault files:
     Files that keep secrets, but not huge data.
 
-    The password may be provided or not (`None`). If not provided, encryption
-    and decryption of the vault file is going to be rejected and access to the
-    data requires that the vault file is unencrypted. If the password is
-    provided, it is converted to a symmetric key which is then used for
-    encryption and decryption of the vault file and for decrypting the vault
-    file content upon access (the vault file in the file system remains
-    encrypted).
+    The password may be provided or not (`None`).
+    If the password is provided, it is converted to a symmetric key which is
+    then used for encrypting and decrypting the vault file itself and for
+    decrypting the vault file content upon access.
+    If the password is not provided, encryption and decryption of the vault file
+    is rejected and access to the vault file content requires that the vault
+    file is in the decrypted state.
 
     The encryption package used by this class is pluggable. The default
     implementation uses the symmetric key support from the
@@ -138,6 +138,9 @@ class EasyVault(object):
           password (:term:`unicode string`):
             Password for encrypting and decrypting the vault file, or `None`
             if not provided.
+
+        Raises:
+          TypeError
         """
         self._filepath = filepath
         if password is None:
@@ -206,7 +209,7 @@ class EasyVault(object):
         """
         Encrypt the vault file.
 
-        The vault file must be unencrypted (i.e. not encrypted by easy-vault).
+        The vault file must be decrypted (i.e. not encrypted by easy-vault).
 
         This method requires a vault password to be provided.
 
@@ -267,10 +270,11 @@ class EasyVault(object):
 
     def _get_bytes_from_encrypted(self):
         """
-        Get the data from an encrypted vault file.
+        Get the content of an encrypted vault file by decrypting the content
+        upon access and leaving the file unchanged.
 
         Returns:
-          :term:`byte string`: Unencrypted data from the vault file.
+          :term:`byte string`: Decrypted content of the vault file.
 
         Raises:
           EasyVaultFileError: I/O error with the vault file
@@ -311,10 +315,10 @@ class EasyVault(object):
 
     def _get_bytes_from_clear(self):
         """
-        Get the data from an unencrypted vault file.
+        Get the content of a decrypted vault file.
 
         Returns:
-          :term:`byte string`: Unencrypted data from the vault file.
+          :term:`byte string`: Decrypted content of the vault file.
 
         Raises:
           EasyVaultFileError: I/O error with the vault file
@@ -332,15 +336,16 @@ class EasyVault(object):
 
     def get_bytes(self):
         """
-        Get the unencrypted content of the vault file as a Byte sequence.
+        Get the decrypted content of the vault file as a Byte sequence.
 
-        The vault file may be encrypted or unencrypted.
+        The vault file may be in the encrypted or decrypted state and remains
+        unchanged.
 
-        If the vault file is encrypted, this method requires a vault password
-        to be provided, otherwise it does not.
+        If the vault file is in the encrypted state, the object this method
+        is called on must have been created with a vault password.
 
         Returns:
-          :term:`byte string`: Unencrypted content of the vault file, as a Byte
+          :term:`byte string`: Decrypted content of the vault file, as a Byte
           sequence.
 
         Raises:
@@ -353,15 +358,16 @@ class EasyVault(object):
 
     def get_text(self):
         """
-        Get the unencrypted content of the vault file as a Unicode string.
+        Get the decrypted content of the vault file as a Unicode string.
 
-        The vault file may be encrypted or unencrypted.
+        The vault file may be in the encrypted or decrypted state and remains
+        unchanged.
 
-        If the vault file is encrypted, this method requires a vault password
-        to be provided, otherwise it does not.
+        If the vault file is in the encrypted state, the object this method
+        is called on must have been created with a vault password.
 
         Returns:
-          :term:`unicode string`: Unencrypted content of the vault file, as a
+          :term:`unicode string`: Decrypted content of the vault file, as a
           Unicode string.
 
         Raises:
@@ -374,13 +380,14 @@ class EasyVault(object):
 
     def get_yaml(self):
         """
-        Get the unencrypted content of a YAML-formatted vault file as a YAML
+        Get the decrypted content of a YAML-formatted vault file as a YAML
         object.
 
-        The vault file may be encrypted or unencrypted.
+        The vault file may be in the encrypted or decrypted state and remains
+        unchanged.
 
-        If the vault file is encrypted, this method requires a vault password
-        to be provided, otherwise it does not.
+        If the vault file is in the encrypted state, the object this method
+        is called on must have been created with a vault password.
 
         Returns:
           dict or list: Top-level object of the YAML-formatted vault file.
