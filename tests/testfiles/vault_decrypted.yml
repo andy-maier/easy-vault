@@ -1,0 +1,13 @@
+# Example Ansible vault file. Password=vault
+
+secrets:
+
+  myserver1:
+    host: 10.11.12.13
+    username: myuser1
+    password: mypass1
+
+  myserver2:
+    host: 10.11.12.14
+    username: myuser2
+    password: mypass2

@@ -18,6 +18,7 @@ from __future__ import absolute_import, print_function
 import os
 import re
 import tempfile
+import shutil
 import base64
 
 import yaml
@@ -197,8 +198,9 @@ class EasyVault(object):
                 format(fn=self._filepath, exc=exc))
             new_exc.__cause__ = None
             raise new_exc  # EasyVaultFileError
-
-        m = HEADER_PATTERN.match(first_bline)
+        # On Windows, match() does not tolerate CRLF line endings
+        first_bline_s = first_bline.strip(b'\n').strip(b'\r')
+        m = HEADER_PATTERN.match(first_bline_s)
         if m is None:
             return False
         if m.group('moniker') != HEADER_MONIKER:
@@ -224,9 +226,11 @@ class EasyVault(object):
                 format(fn=self._filepath))
 
         try:
-            with open(self._filepath, 'rb', encoding=None) as fp:
+            with open(self._filepath, 'rb') as fp:
                 first_bline = fp.readline()  # Including trailing newline
-                m = HEADER_PATTERN.match(first_bline)
+                first_bline_s = first_bline.strip(b'\n').strip(b'\r')
+                # On Windows, match() does not tolerate CRLF line endings
+                m = HEADER_PATTERN.match(first_bline_s)
                 if m and m.group('moniker') == HEADER_MONIKER:
                     raise EasyVaultEncryptError(
                         "Cannot encrypt vault file {fn}: "
@@ -289,7 +293,9 @@ class EasyVault(object):
         try:
             with open(self._filepath, 'rb') as fp:
                 first_bline = fp.readline()  # Including trailing newline
-                m = HEADER_PATTERN.match(first_bline)
+                first_bline_s = first_bline.strip(b'\n').strip(b'\r')
+                # On Windows, match() does not tolerate CRLF line endings
+                m = HEADER_PATTERN.match(first_bline_s)
                 if m is None or m.group('moniker') != HEADER_MONIKER:
                     raise EasyVaultDecryptError(
                         "Cannot decrypt vault file {fn}: "
@@ -534,7 +540,10 @@ def write_file(filepath, data):
         raise new_exc  # EasyVaultFileError
 
     try:
-        os.rename(tfpath, filepath)
+        # On Windows, the temp file may be on a different drive than the
+        # original file, so os.rename() cannot be used.
+        shutil.copy(tfpath, filepath)
+        os.remove(tfpath)
     except (OSError, IOError) as exc:
         new_exc = EasyVaultFileError(
             "Cannot rename temporary file {tfn} to vault file {fn}: {exc}".
