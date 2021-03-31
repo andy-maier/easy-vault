@@ -21,7 +21,7 @@ import sys
 import getpass
 import click
 
-from ._common_options import add_options, help_option
+from ._common_options import add_options, help_option, quiet_option
 from .._version import __version__ as cli_version
 from .._key_ring_lib import KeyRingLib
 from .._easy_vault import EasyVault, EasyVaultException
@@ -50,6 +50,7 @@ def cli(ctx):
 @click.option('-n', '--no-keyring', is_flag=True, default=False,
               help=u'Do not use the keyring service. '
               u'Mutually exclusive with --set-password')
+@add_options(quiet_option)
 @add_options(help_option)
 @click.pass_obj
 def cli_encrypt(context, vaultfile, **options):
@@ -75,7 +76,7 @@ def cli_encrypt(context, vaultfile, **options):
 
     Note that these two choices are mutually exclusive.
     """
-    verbose = True
+    verbose = not options['quiet']
     set_pass = options['set_password']
     no_keyring = options['no_keyring']
     if set_pass and no_keyring:
@@ -118,6 +119,7 @@ def cli_encrypt(context, vaultfile, **options):
               help=u'Do not use the keyring service. '
               u'Mutually exclusive with --set-password')
 @add_options(help_option)
+@add_options(quiet_option)
 @click.pass_obj
 def cli_decrypt(context, vaultfile, **options):
     """
@@ -142,8 +144,7 @@ def cli_decrypt(context, vaultfile, **options):
 
     Note that these two choices are mutually exclusive.
     """
-
-    verbose = True
+    verbose = not options['quiet']
     set_pass = options['set_password']
     no_keyring = options['no_keyring']
     if set_pass and no_keyring:

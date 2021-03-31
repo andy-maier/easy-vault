@@ -21,6 +21,10 @@ import click
 help_option = [  # pylint: disable=invalid-name
     click.help_option('-h', '--help', help=u'Show this help message.')]
 
+quiet_option = [  # pylint: disable=invalid-name
+    click.option('-q', '--quiet', is_flag=True, default=False,
+                 help=u'Print no messages (except for password prompt).')]
+
 
 def add_options(options):
     """

@@ -51,6 +51,10 @@ Released: not yet
 
 * Docs: Improved the documentation and command messages in many places.
 
+* Added a '--quiet' option to the 'easy-vault encrypt' and 'easy-vault decrypt'
+  commands that silöences the messages except for the password prompt.
+  (issue #12)
+
 **Cleanup:**
 
 **Known issues:**
