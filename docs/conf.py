@@ -485,7 +485,7 @@ autodoc_mock_imports = []
 #       to datatypes of function parameters can be controlled.
 #
 intersphinx_mapping = {
-  'py': ('https://docs.python.org/2/', None), # agnostic to Python version
+  'py': ('https://docs.python.org/3/', None), # default Python version
   'py2': ('https://docs.python.org/2', None), # specific to Python 2
   'py3': ('https://docs.python.org/3', None), # specific to Python 3
   'keyring': ('https://keyring.readthedocs.io/en/stable', None),

@@ -43,7 +43,7 @@ class KeyRingException(Exception):
     Base exception for all exceptions raised by the
     :class:`~easy_vault.KeyRingLib` class.
 
-    Derived from :exc:`py:Exception`.
+    Derived from :exc:`~py:Exception`.
     """
     pass
 
@@ -76,13 +76,6 @@ class KeyRingLib(object):
 
     The keyring items that are created have a fixed service/app name that
     starts with 'easy_vault'. There is one keyring item for each vault file.
-
-    If no keyring service is available that is recognized by the
-    keyring package, the :exc:`keyring:keyring.errors.NoKeyringError` exception
-    is raised starting with keyring version 22.0, or the standard Python
-    RuntimeError before that keyring version. Other errors with the keyring
-    servive will be raised as exceptions that are derived from the
-    :exc:`keyring:keyring.errors.KeyringError` base exception class.
 
     For details on the keyring service, see section :ref:`Keyring service`.
     """
