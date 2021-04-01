@@ -50,7 +50,7 @@ class EasyVaultException(Exception):
     Base exception for all exceptions raised by the
     :class:`~easy_vault.EasyVault` class.
 
-    Derived from :exc:`py:Exception`.
+    Derived from :exc:`~py:Exception`.
     """
     pass
 
@@ -141,7 +141,8 @@ class EasyVault(object):
             if not provided.
 
         Raises:
-          TypeError
+          TypeError: Type error in arguments or in return of pluggable
+            encryption function.
         """
         self._filepath = filepath
         if password is None:
@@ -187,7 +188,7 @@ class EasyVault(object):
           easy-vault.
 
         Raises:
-          EasyVaultFileError: I/O error with the vault file
+          :exc:`EasyVaultFileError`: I/O error with the vault file.
         """
         try:
             with open(self._filepath, 'rb') as fp:
@@ -216,8 +217,9 @@ class EasyVault(object):
         This method requires a vault password to be provided.
 
         Raises:
-          EasyVaultFileError: I/O error with the vault file or a temporary file
-          EasyVaultEncryptError: Error encrypting the vault file
+          :exc:`EasyVaultFileError`: I/O error with the vault file or a
+            temporary file.
+          :exc:`EasyVaultEncryptError`: Error encrypting the vault file.
         """
         if not self.password_provided:
             raise EasyVaultEncryptError(
@@ -266,8 +268,9 @@ class EasyVault(object):
         This method requires a vault password to be provided.
 
         Raises:
-          EasyVaultFileError: I/O error with the vault file or a temporary file
-          EasyVaultDecryptError: Error decrypting the vault file
+          :exc:`EasyVaultFileError`: I/O error with the vault file or a
+            temporary file.
+          :exc:`EasyVaultDecryptError`: Error decrypting the vault file.
         """
         clear_bdata = self._get_bytes_from_encrypted()
         write_file(self._filepath, clear_bdata)
@@ -281,8 +284,8 @@ class EasyVault(object):
           :term:`byte string`: Decrypted content of the vault file.
 
         Raises:
-          EasyVaultFileError: I/O error with the vault file
-          EasyVaultDecryptError: Error decrypting the vault file
+          :exc:`EasyVaultFileError`: I/O error with the vault file.
+          :exc:`EasyVaultDecryptError`: Error decrypting the vault file.
         """
         if not self.password_provided:
             raise EasyVaultDecryptError(
@@ -327,7 +330,7 @@ class EasyVault(object):
           :term:`byte string`: Decrypted content of the vault file.
 
         Raises:
-          EasyVaultFileError: I/O error with the vault file
+          :exc:`EasyVaultFileError`: I/O error with the vault file.
         """
         try:
             with open(self._filepath, 'rb') as fp:
@@ -355,8 +358,8 @@ class EasyVault(object):
           sequence.
 
         Raises:
-          EasyVaultFileError: I/O error with the vault file
-          EasyVaultDecryptError: Error decrypting the vault file
+          :exc:`EasyVaultFileError`: I/O error with the vault file.
+          :exc:`EasyVaultDecryptError`: Error decrypting the vault file.
         """
         if self.is_encrypted():
             return self._get_bytes_from_encrypted()
@@ -377,8 +380,8 @@ class EasyVault(object):
           Unicode string.
 
         Raises:
-          EasyVaultFileError: I/O error with the vault file
-          EasyVaultDecryptError: Error decrypting the vault file
+          :exc:`EasyVaultFileError`: I/O error with the vault file.
+          :exc:`EasyVaultDecryptError`: Error decrypting the vault file.
         """
         bdata = self.get_bytes()
         udata = bdata.decode('utf-8')
@@ -399,9 +402,10 @@ class EasyVault(object):
           dict or list: Top-level object of the YAML-formatted vault file.
 
         Raises:
-          EasyVaultFileError: I/O error with the vault file or a temporary file
-          EasyVaultYamlError: YAML syntax error in the vault file
-          EasyVaultDecryptError: Error decrypting the vault file
+          :exc:`EasyVaultFileError`: I/O error with the vault file or a
+            temporary file.
+          :exc:`EasyVaultYamlError`: YAML syntax error in the vault file.
+          :exc:`EasyVaultDecryptError`: Error decrypting the vault file.
         """
         clear_bdata = self.get_bytes()
         try:
@@ -491,7 +495,7 @@ class EasyVault(object):
           :term:`byte string`: The clear data.
 
         Raises:
-          EasyVaultDecryptError: Error decrypting the vault file
+          :exc:`EasyVaultDecryptError`: Error decrypting the vault file.
         """
         f = Fernet(key)
         try:
@@ -524,7 +528,7 @@ def write_file(filepath, data):
         The data to be written.
 
     Raises:
-      EasyVaultFileError: I/O error with the file
+      :exc:`EasyVaultFileError`: I/O error with the file.
     """
     assert isinstance(data, six.binary_type), type(data)
     try:

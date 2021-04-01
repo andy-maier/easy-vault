@@ -37,14 +37,6 @@ def get_password(
     is disabled and the keyring service did not have an item for the vault file
     stored.
 
-    If the use of the keyring service is enabled, but no keyring service is
-    available that is recognized by the keyring package, the
-    :exc:`keyring:keyring.errors.NoKeyringError` exception is raised starting
-    with keyring version 22.0, or the standard Python RuntimeError before
-    that keyring version. Other errors with the keyring servive will be raised
-    as exceptions that are derived from the
-    :exc:`keyring:keyring.errors.KeyringError` base exception class.
-
     This is a convenience function that uses the password methods of the
     :class:`~easy_vault.KeyRingLib` class.
 
@@ -70,11 +62,10 @@ def get_password(
       :term:`unicode string`: Password for the vault file, or `None`.
 
     Raises:
-      ValueError: use_keyring and use_prompt were both False
-      :exc:`keyring:keyring.errors.NoKeyringError` or RuntimeError:
-        No keyring service available
-      :exc:`keyring:keyring.errors.KeyringError`: Base class for errors with
-        the keyring service
+      ValueError: Use of keyring service and use of password prompting were
+        both disabled.
+      :exc:`KeyRingNotAvailable`: No keyring service available.
+      :exc:`KeyRingError`: An error happend in the keyring service.
     """
     password = None
 
@@ -105,14 +96,6 @@ def set_password(
     For consistency with :func:`get_password`, the use of the keyring service
     can be disabled, in which case the function does nothing.
 
-    If the use of the keyring service is enabled, but no keyring service is
-    available that is recognized by the keyring package, the
-    :exc:`keyring:keyring.errors.NoKeyringError` exception is raised starting
-    with keyring version 22.0, or the standard Python RuntimeError before
-    that keyring version. Other errors with the keyring servive will be raised
-    as exceptions that are derived from the
-    :exc:`keyring:keyring.errors.KeyringError` base exception class.
-
     This is a convenience function that uses the password methods of the
     :class:`~easy_vault.KeyRingLib` class.
 
@@ -136,10 +119,8 @@ def set_password(
         Print function to be used for the additional messages in verbose mode.
 
     Raises:
-      :exc:`keyring:keyring.errors.NoKeyringError` or RuntimeError:
-        No keyring service available
-      :exc:`keyring:keyring.errors.KeyringError`: Base class for errors with
-        the keyring service
+      :exc:`KeyRingNotAvailable`: No keyring service available.
+      :exc:`KeyRingError`: An error happend in the keyring service.
     """
     if use_keyring:
         keyringlib = KeyRingLib()
