@@ -17,7 +17,7 @@ Test the _key_ring_lib.py module.
 from __future__ import absolute_import, print_function
 
 import pytest
-from easy_vault import KeyRingLib
+from easy_vault import KeyRingLib, KeyRingNotAvailable
 
 # pylint: disable=unused-import
 from ..utils.keyring_utils import keyring_filepath  # noqa: F401
@@ -44,3 +44,25 @@ def test_keyringlib_get_set(keyring_filepath):
     # Test that getting a password succeeds and is as expected
     act_password = keyringlib.get_password(keyring_filepath)
     assert act_password == password
+
+
+def test_keyringlib_available():
+    """
+    Test function for KeyRingLib.is_available()
+    """
+    keyringlib = KeyRingLib()
+
+    # Code to be tested
+    is_avail = keyringlib.is_available()
+
+    assert isinstance(is_avail, bool)
+
+    check_avail = True
+    try:
+        # Code to be tested
+        keyringlib.check_available()
+    except Exception as exc:  # pylint: disable=broad-except
+        assert isinstance(exc, KeyRingNotAvailable)
+        check_avail = False
+
+    assert check_avail == is_avail

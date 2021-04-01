@@ -60,6 +60,10 @@ Released: not yet
   commands that silöences the messages except for the password prompt.
   (issue #12)
 
+* In the 'KeyRingLib' class, added methods 'is_available()' and
+  'check_available() that return whether the keyring service is available
+  or check that it is available. (issue #34)
+
 * Test: Improved test coverage. (issue #8)
 
 **Cleanup:**
