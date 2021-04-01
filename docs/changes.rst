@@ -64,6 +64,9 @@ Released: not yet
   'check_available() that return whether the keyring service is available
   or check that it is available. (issue #34)
 
+* Added a new 'easy-vault check-keyring' command that checks whether the
+  keyring service is available. (issue #36)
+
 * Test: Improved test coverage. (issue #8)
 
 **Cleanup:**
