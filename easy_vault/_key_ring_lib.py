@@ -39,8 +39,9 @@ class KeyRingLib(object):
 
     If no keyring service is available that is recognized by the
     keyring package, the :exc:`keyring:keyring.errors.NoKeyringError` exception
-    is raised. Other errors with the keyring servive will be raised as
-    exceptions that are derived from the
+    is raised starting with keyring version 22.0, or the standard Python
+    RuntimeError before that keyring version. Other errors with the keyring
+    servive will be raised as exceptions that are derived from the
     :exc:`keyring:keyring.errors.KeyringError` base exception class.
 
     For details on the keyring service, see section :ref:`Keyring service`.
@@ -63,8 +64,8 @@ class KeyRingLib(object):
           :term:`unicode string`: Password for the vault file, or `None`.
 
         Raises:
-          :exc:`keyring:keyring.errors.NoKeyringError`: No keyring service
-            available
+          :exc:`keyring:keyring.errors.NoKeyringError` or RuntimeError:
+            No keyring service available
           :exc:`keyring:keyring.errors.KeyringError`: Base class for errors with
             the keyring service
         """
@@ -85,8 +86,8 @@ class KeyRingLib(object):
             Password for the vault file.
 
         Raises:
-          :exc:`keyring:keyring.errors.NoKeyringError`: No keyring service
-            available
+          :exc:`keyring:keyring.errors.NoKeyringError` or RuntimeError:
+            No keyring service available
           :exc:`keyring:keyring.errors.KeyringError`: Base class for errors with
             the keyring service
         """
