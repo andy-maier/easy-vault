@@ -17,10 +17,10 @@ Change log
 ==========
 
 
-Version 0.6.0.dev1
-------------------
+Version 0.6.0
+-------------
 
-Released: not yet
+Released: 2021-04-02
 
 **Incompatible changes:**
 
@@ -30,8 +30,6 @@ Released: not yet
 
 * The '--prompt' option of the 'easy-vault encrypt' and 'easy-vault decrypt'
   commands was removed. (related to issue #20)
-
-**Deprecations:**
 
 **Bug fixes:**
 
@@ -68,14 +66,6 @@ Released: not yet
   keyring service is available. (issue #36)
 
 * Test: Improved test coverage. (issue #8)
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/andy-maier/easy-vault/issues
 
 
 Version 0.5.0
