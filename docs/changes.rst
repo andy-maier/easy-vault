@@ -35,6 +35,11 @@ Released: not yet
 
 **Bug fixes:**
 
+* Fixed the issue that an open() call used the 'encoding' argument which
+  is not supported on Python 2.7.
+
+* Fixed issues with files on Windows that have CRLF line endings.
+
 **Enhancements:**
 
 * In the 'EasyVault' class, added more user control for the handling of
@@ -54,6 +59,8 @@ Released: not yet
 * Added a '--quiet' option to the 'easy-vault encrypt' and 'easy-vault decrypt'
   commands that silöences the messages except for the password prompt.
   (issue #12)
+
+* Test: Improved test coverage. (issue #8)
 
 **Cleanup:**
 
