@@ -83,6 +83,18 @@ Exception classes
     :members:
     :special-members: __str__
 
+.. autoclass:: easy_vault.KeyRingException
+    :members:
+    :special-members: __str__
+
+.. autoclass:: easy_vault.KeyRingNotAvailable
+    :members:
+    :special-members: __str__
+
+.. autoclass:: easy_vault.KeyRingError
+    :members:
+    :special-members: __str__
+
 
 .. _`Package version`:
 
