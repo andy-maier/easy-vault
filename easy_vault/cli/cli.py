@@ -23,7 +23,7 @@ import click
 
 from ._common_options import add_options, help_option, quiet_option
 from .._version import __version__ as cli_version
-from .._key_ring_lib import KeyRingLib
+from .._key_ring_lib import KeyRingLib, KeyRingNotAvailable
 from .._easy_vault import EasyVault, EasyVaultException
 from .._password import get_password, set_password
 
@@ -37,6 +37,9 @@ from .._password import get_password, set_password
 def cli(ctx):
     """
     The easy-vault command is used to encrypt and decrypt vault files.
+
+    The passwords for the vault files are stored in the keyring service
+    of the local system.
     """
     pass
     # Command will be executed automatically
@@ -52,8 +55,7 @@ def cli(ctx):
               u'Mutually exclusive with --set-password')
 @add_options(quiet_option)
 @add_options(help_option)
-@click.pass_obj
-def cli_encrypt(context, vaultfile, **options):
+def cli_encrypt(vaultfile, **options):
     """
     Encrypt a vault file, if not yet encrypted.
 
@@ -120,8 +122,7 @@ def cli_encrypt(context, vaultfile, **options):
               u'Mutually exclusive with --set-password')
 @add_options(help_option)
 @add_options(quiet_option)
-@click.pass_obj
-def cli_decrypt(context, vaultfile, **options):
+def cli_decrypt(vaultfile, **options):
     """
     Decrypt a vault file, if encrypted.
 
@@ -176,6 +177,30 @@ def cli_decrypt(context, vaultfile, **options):
 
     set_password(vaultfile, password, use_keyring=not no_keyring,
                  verbose=verbose, echo=click.echo)
+
+
+@cli.command('check-keyring')
+@add_options(quiet_option)
+@add_options(help_option)
+def cli_check_keyring(**options):
+    """
+    Check whether the keyring service is available.
+
+    If available, the command exits with 0.
+    If not available, the command prints an error message with some information
+    about the reasons, and exits with 1.
+    """
+    verbose = not options['quiet']
+
+    try:
+        KeyRingLib.check_available()
+    except KeyRingNotAvailable as exc:
+        if verbose:
+            click.echo("Error: {}".format(exc))
+            click.get_current_context().exit(1)
+
+    if verbose:
+        click.echo("Success! Keyring service is available")
 
 
 def check_exists(vaultfile):

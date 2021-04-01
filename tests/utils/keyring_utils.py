@@ -18,9 +18,6 @@ from __future__ import absolute_import
 
 import pytest
 import keyring
-import keyring.backends.chainer  # Required to import separately
-import keyring.backends.null  # Required to import separately
-import keyring.backends.fail
 
 from easy_vault import KeyRingLib
 

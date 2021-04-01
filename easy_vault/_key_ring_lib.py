@@ -17,6 +17,9 @@ The KeyRingLib class.
 from __future__ import absolute_import, print_function
 import os
 import keyring
+import keyring.backends.chainer  # Required to import separately
+import keyring.backends.null  # Required to import separately
+import keyring.backends.fail
 
 __all__ = ['KeyRingLib', 'KeyRingException', 'KeyRingNotAvailable',
            'KeyRingError']
