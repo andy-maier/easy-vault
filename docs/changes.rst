@@ -28,6 +28,9 @@ Released: not yet
 
 **Bug fixes:**
 
+* Fixed that the package did not contain the files for the 'easy-vault'
+  command. (issue #45)
+
 **Enhancements:**
 
 **Cleanup:**
