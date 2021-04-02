@@ -231,6 +231,7 @@ dist_included_files := \
     requirements.txt \
     setup.py \
     $(package_name)/*.py \
+    $(package_name)/*/*.py \
 
 # Issues reported by safety command that are ignored.
 # Package upgrade strategy due to reported safety issues:
