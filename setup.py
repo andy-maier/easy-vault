@@ -106,11 +106,9 @@ setuptools.setup(
         'Bug Tracker':
         'https://github.com/andy-maier/easy-vault/issues',
         'Documentation':
-        'https://easy-vault.readthedocs.io/en/latest/',
+        'https://easy-vault.readthedocs.io/en/stable/',
         'Change Log':
-        'https://easy-vault.readthedocs.io/en/latest/changes.html',
-        'Source Code':
-        'https://github.com/andy-maier/easy-vault',
+        'https://easy-vault.readthedocs.io/en/stable/changes.html',
     },
 
     options={'bdist_wheel': {'universal': True}},
