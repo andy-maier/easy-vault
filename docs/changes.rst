@@ -20,6 +20,8 @@ Change log
 Version 0.7.0.dev1
 ------------------
 
+This version contains all fixes up to version 0.6.1.
+
 Released: not yet
 
 **Incompatible changes:**
