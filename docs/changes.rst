@@ -17,29 +17,15 @@ Change log
 ==========
 
 
-Version 0.6.1.dev1
-------------------
+Version 0.6.1
+-------------
 
-Released: not yet
-
-**Incompatible changes:**
-
-**Deprecations:**
+Released: 2021-04-02
 
 **Bug fixes:**
 
 * Fixed that the package did not contain the files for the 'easy-vault'
   command. (issue #45)
-
-**Enhancements:**
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/andy-maier/easy-vault/issues
 
 
 Version 0.6.0
