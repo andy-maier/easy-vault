@@ -192,8 +192,9 @@ def cli_check_keyring(**options):
     """
     verbose = not options['quiet']
 
+    kr = Keyring()
     try:
-        Keyring.check_available()
+        kr.check_available()
     except KeyringNotAvailable as exc:
         if verbose:
             click.echo("Error: {}".format(exc))
