@@ -128,6 +128,43 @@ class Keyring(object):
         keyring.set_password(
             self.keyring_service(), self.keyring_username(filepath), password)
 
+    def delete_password(self, filepath):
+        """
+        Delete the password for a vault file in the keyring service.
+
+        Parameters:
+
+          filepath (:term:`unicode string`):
+            Path name of the vault file. It will be normalized to identify the
+            keyring item for the vault file.
+
+        Returns:
+          bool: Indicates whether the password existed.
+
+        Raises:
+          :exc:`KeyringNotAvailable`: No keyring service available.
+          :exc:`KeyringError`: An error happend in the keyring service.
+        """
+        service = self.keyring_service()
+        username = self.keyring_username(filepath)
+        try:
+            pw = keyring.get_password(service, username)
+        except NO_KEYRING_EXCEPTION as exc:
+            raise KeyringNotAvailable(str(exc))
+        except keyring.errors.KeyringError as exc:
+            raise KeyringError(str(exc))
+
+        if pw is None:
+            return False
+
+        try:
+            keyring.delete_password(service, username)
+        except NO_KEYRING_EXCEPTION as exc:
+            raise KeyringNotAvailable(str(exc))
+        except keyring.errors.KeyringError as exc:
+            raise KeyringError(str(exc))
+        return True
+
     def is_available(self):
         """
         Indicate whether the keyring service is available on the local system.
