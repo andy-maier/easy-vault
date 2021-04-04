@@ -27,9 +27,10 @@ from ..utils.keyring_utils import is_keyring_available
 @pytest.mark.skipif(
     not is_keyring_available(), reason="No keyring service available")
 # pylint: disable=redefined-outer-name
-def test_keyring_get_set(keyring_filepath):
+def test_keyring_get_set_delete(keyring_filepath):
     """
-    Test function for Keyring.get_password() / set_password()
+    Test function for Keyring.get_password() / set_password() /
+    delete_password()
     """
     kr = Keyring()
     password = 'mypassword'
@@ -38,12 +39,24 @@ def test_keyring_get_set(keyring_filepath):
     act_password = kr.get_password(keyring_filepath)
     assert act_password is None
 
+    # Test that the password does not exist
+    existed = kr.delete_password(keyring_filepath)
+    assert existed is False
+
     # Test that setting a password succeeds
     kr.set_password(keyring_filepath, password)
 
     # Test that getting a password succeeds and is as expected
     act_password = kr.get_password(keyring_filepath)
     assert act_password == password
+
+    # Delete the password
+    existed = kr.delete_password(keyring_filepath)
+    assert existed is True
+
+    # Test that the password does not exist
+    existed = kr.delete_password(keyring_filepath)
+    assert existed is False
 
 
 def test_keyring_available():

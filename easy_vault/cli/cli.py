@@ -23,7 +23,7 @@ import click
 
 from ._common_options import add_options, help_option, quiet_option
 from .._version import __version__ as cli_version
-from .._keyring import Keyring, KeyringNotAvailable
+from .._keyring import Keyring, KeyringNotAvailable, KeyringException
 from .._easy_vault import EasyVault, EasyVaultException
 from .._password import get_password, set_password
 
@@ -201,6 +201,28 @@ def cli_check_keyring(**options):
 
     if verbose:
         click.echo("Success! Keyring service is available")
+
+
+@cli.command('delete-password')
+@click.argument('vaultfile', type=str, metavar='VAULTFILE', required=True)
+@add_options(quiet_option)
+@add_options(help_option)
+def cli_delete_password(vaultfile, **options):
+    """
+    Delete the password for a vault file in the keyring service.
+    """
+    verbose = not options['quiet']
+
+    kr = Keyring()
+    try:
+        existed = kr.delete_password(vaultfile)
+    except KeyringException as exc:
+        raise click.ClickException(exc)
+    if verbose:
+        if existed:
+            click.echo("Success! Password in keyring service has been deleted")
+        else:
+            click.echo("Success! Password in keyring service does not exist")
 
 
 def check_exists(vaultfile):
