@@ -538,20 +538,27 @@ def write_file(filepath, data):
             tfpath = tfp.name
     except (OSError, IOError) as exc:
         new_exc = EasyVaultFileError(
-            "Cannot open temporary file {tfn} for writing: {exc}".
-            format(tfn=tfp.name, exc=exc))
+            "Cannot open temporary file for writing: {exc}".
+            format(exc=exc))
         new_exc.__cause__ = None
         raise new_exc  # EasyVaultFileError
 
+    # On Windows, the temp file may be on a different drive than the
+    # original file, so os.rename() cannot be used and we copy/delete instead.
     try:
-        # On Windows, the temp file may be on a different drive than the
-        # original file, so os.rename() cannot be used.
         shutil.copy(tfpath, filepath)
+    except (OSError, IOError) as exc:
+        new_exc = EasyVaultFileError(
+            "Cannot copy temporary file {tfn} to vault file {fn}: {exc}".
+            format(tfn=tfpath, fn=filepath, exc=exc))
+        new_exc.__cause__ = None
+        raise new_exc  # EasyVaultFileError
+    try:
         os.remove(tfpath)
     except (OSError, IOError) as exc:
         new_exc = EasyVaultFileError(
-            "Cannot rename temporary file {tfn} to vault file {fn}: {exc}".
-            format(tfn=tfpath, fn=filepath, exc=exc))
+            "Cannot remove temporary file {tfn}: {exc}".
+            format(tfn=tfpath, exc=exc))
         new_exc.__cause__ = None
         raise new_exc  # EasyVaultFileError
 

@@ -39,11 +39,17 @@ Released: not yet
 * Added missing exception handling to 'Keyring.set_password()' and improved
   exception chaining in 'Keyring.get_password()' and 'Keyring.delete_password()'.
 
+* Fixed an UnboundLocalError when the temporary file could not be created or
+  written during 'EasyVault.encrypt()' / 'decrypt()'.
+
 **Enhancements:**
 
 * Added a 'easy-vault delete-password' command that deletes the password for
   a vault file in the keyring service. Added a corresponding
   'Keyring.delete_password()' method. (issues #33 and #35)
+
+* Improved error messages when writing vault file during 'EasyVault.encrypt()'
+  / 'decrypt()'.
 
 * Test: Improved test coverage of Keyring class.
 

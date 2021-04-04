@@ -15,14 +15,24 @@ Test the _easy_vault.py module.
 """
 
 from __future__ import absolute_import, print_function
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 import pytest
 import six
+import yaml
 from easy_vault import EasyVault, EasyVaultFileError, EasyVaultEncryptError, \
-    EasyVaultDecryptError
+    EasyVaultDecryptError, EasyVaultYamlError
 
 from ..utils.simplified_test_function import simplified_test_function
 from ..utils.vault_utils import saved_file, assert_files_bytes_equal, \
     assert_files_text_equal, assert_content_text_equal
+
+if six.PY2:
+    BUILTINS_OPEN = '__builtin__.open'
+else:
+    BUILTINS_OPEN = 'builtins.open'
 
 TEST_VAULT_DECRYPTED = 'tests/testfiles/vault_decrypted.yml'
 TEST_VAULT_ENCRYPTED = 'tests/testfiles/vault_encrypted.yml'
@@ -316,6 +326,36 @@ def test_vault_encrypt(testcase, filepath, password):
         assert vault.is_encrypted()
 
 
+@pytest.mark.parametrize(
+    "patched_function",
+    [
+        'tempfile.NamedTemporaryFile',
+        'shutil.copy',
+        'os.remove',
+    ]
+)
+@pytest.mark.parametrize(
+    "patched_exc",
+    [IOError, OSError]
+)
+def test_vault_encrypt_fail(patched_exc, patched_function):
+    """
+    Test function for EasyVault.encrypt() where a function raises an exception.
+    """
+    filepath = TEST_VAULT_DECRYPTED
+    password = TEST_VAULT_PASSWORD
+
+    # Since saved_file() depends on a functioning open(), we need to patch
+    # open() after using saved_file().
+    with saved_file(filepath):
+        with mock.patch(patched_function, side_effect=patched_exc):
+            vault = EasyVault(filepath, password)
+            with pytest.raises(EasyVaultFileError):
+
+                # The code to be tested
+                vault.encrypt()
+
+
 TESTCASES_VAULT_DECRYPT = [
 
     # Testcases for EasyVault.decrypt()
@@ -392,6 +432,36 @@ def test_vault_decrypt(testcase, filepath, password, exp_filepath):
 
         if exp_filepath:
             assert_files_text_equal(filepath, exp_filepath)
+
+
+@pytest.mark.parametrize(
+    "patched_function",
+    [
+        'tempfile.NamedTemporaryFile',
+        'shutil.copy',
+        'os.remove',
+    ]
+)
+@pytest.mark.parametrize(
+    "patched_exc",
+    [IOError, OSError]
+)
+def test_vault_decrypt_fail(patched_exc, patched_function):
+    """
+    Test function for EasyVault.decrypt() where a function raises an exception.
+    """
+    filepath = TEST_VAULT_ENCRYPTED
+    password = TEST_VAULT_PASSWORD
+
+    # Since saved_file() depends on a functioning open(), we need to patch
+    # open() after using saved_file().
+    with saved_file(filepath):
+        with mock.patch(patched_function, side_effect=patched_exc):
+            vault = EasyVault(filepath, password)
+            with pytest.raises(EasyVaultFileError):
+
+                # The code to be tested
+                vault.decrypt()
 
 
 TESTCASES_VAULT_GET = [
@@ -548,3 +618,170 @@ def test_vault_get_yaml(testcase, filepath, password, exp_filepath):
         assert_files_bytes_equal(filepath, saved_filepath)
 
         assert isinstance(act_yaml, (dict, list))
+
+
+@pytest.mark.parametrize(
+    "failing_open",
+    [0, 1]
+)
+@pytest.mark.parametrize(
+    "filepath",
+    [TEST_VAULT_ENCRYPTED, TEST_VAULT_DECRYPTED]
+)
+@pytest.mark.parametrize(
+    "open_exc",
+    [IOError, OSError]
+)
+def test_vault_get_bytes_fail(open_exc, filepath, failing_open):
+    """
+    Test function for EasyVault.get_bytes() that fails because open() on vault
+    file raises an exception.
+    """
+    password = TEST_VAULT_PASSWORD
+
+    # Since saved_file() depends on a functioning open(), we need to patch
+    # open() after using saved_file().
+    with saved_file(filepath):
+
+        # The following ideally would be a simple counter. In Python 3, that
+        # is possible with the 'nonlocal' statement, but since we support
+        # Python 2, we have the counter in a dict to avoid the rebinding.
+        local_dict = dict()
+        local_dict['count'] = 0
+
+        builtins_open = open
+
+        def new_open(*args, **kwargs):
+            """Mock wrapper for open()"""
+            if local_dict['count'] == failing_open:
+                raise open_exc()
+            local_dict['count'] += 1
+            return builtins_open(*args, **kwargs)
+
+        with mock.patch(BUILTINS_OPEN, new_open):
+
+            vault = EasyVault(filepath, password)
+            with pytest.raises(EasyVaultFileError):
+
+                # The code to be tested
+                vault.get_bytes()
+
+
+@pytest.mark.parametrize(
+    "failing_open",
+    [0, 1]
+)
+@pytest.mark.parametrize(
+    "filepath",
+    [TEST_VAULT_ENCRYPTED, TEST_VAULT_DECRYPTED]
+)
+@pytest.mark.parametrize(
+    "open_exc",
+    [IOError, OSError]
+)
+def test_vault_get_text_fail(open_exc, filepath, failing_open):
+    """
+    Test function for EasyVault.get_text() that fails because open() on vault
+    file raises an exception.
+    """
+    password = TEST_VAULT_PASSWORD
+
+    # Since saved_file() depends on a functioning open(), we need to patch
+    # open() after using saved_file().
+    with saved_file(filepath):
+
+        # The following ideally would be a simple counter. In Python 3, that
+        # is possible with the 'nonlocal' statement, but since we support
+        # Python 2, we have the counter in a dict to avoid the rebinding.
+        local_dict = dict()
+        local_dict['count'] = 0
+
+        builtins_open = open
+
+        def new_open(*args, **kwargs):
+            """Mock wrapper for open()"""
+            if local_dict['count'] == failing_open:
+                raise open_exc()
+            local_dict['count'] += 1
+            return builtins_open(*args, **kwargs)
+
+        with mock.patch(BUILTINS_OPEN, new_open):
+
+            vault = EasyVault(filepath, password)
+            with pytest.raises(EasyVaultFileError):
+
+                # The code to be tested
+                vault.get_text()
+
+
+@pytest.mark.parametrize(
+    "failing_open",
+    [0, 1]
+)
+@pytest.mark.parametrize(
+    "filepath",
+    [TEST_VAULT_ENCRYPTED, TEST_VAULT_DECRYPTED]
+)
+@pytest.mark.parametrize(
+    "open_exc",
+    [IOError, OSError]
+)
+def test_vault_get_yaml_fail1(open_exc, filepath, failing_open):
+    """
+    Test function for EasyVault.get_yaml() that fails because open() on vault
+    file raises an exception.
+    """
+    password = TEST_VAULT_PASSWORD
+
+    # Since saved_file() depends on a functioning open(), we need to patch
+    # open() after using saved_file().
+    with saved_file(filepath):
+
+        # The following ideally would be a simple counter. In Python 3, that
+        # is possible with the 'nonlocal' statement, but since we support
+        # Python 2, we have the counter in a dict to avoid the rebinding.
+        local_dict = dict()
+        local_dict['count'] = 0
+
+        builtins_open = open
+
+        def new_open(*args, **kwargs):
+            """Mock wrapper for open()"""
+            if local_dict['count'] == failing_open:
+                raise open_exc()
+            local_dict['count'] += 1
+            return builtins_open(*args, **kwargs)
+
+        with mock.patch(BUILTINS_OPEN, new_open):
+
+            vault = EasyVault(filepath, password)
+            with pytest.raises(EasyVaultFileError):
+
+                # The code to be tested
+                vault.get_yaml()
+
+
+@pytest.mark.parametrize(
+    "filepath",
+    [TEST_VAULT_ENCRYPTED, TEST_VAULT_DECRYPTED]
+)
+@pytest.mark.parametrize(
+    "yaml_load_exc",
+    [yaml.YAMLError]
+)
+def test_vault_get_yaml_fail2(yaml_load_exc, filepath):
+    """
+    Test function for EasyVault.get_yaml() that fails because yaml.safe_load()
+    on vault file raises an exception.
+    """
+    password = TEST_VAULT_PASSWORD
+
+    # Since saved_file() depends on a functioning open(), we need to patch
+    # open() after using saved_file().
+    with saved_file(filepath):
+        with mock.patch.object(yaml, 'safe_load', side_effect=yaml_load_exc):
+            vault = EasyVault(filepath, password)
+            with pytest.raises(EasyVaultYamlError):
+
+                # The code to be tested
+                vault.get_yaml()
