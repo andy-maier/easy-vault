@@ -18,7 +18,7 @@ keyring service.
 from __future__ import absolute_import, print_function
 
 import getpass
-from ._key_ring_lib import KeyRingLib
+from ._keyring import Keyring
 
 __all__ = ['get_password', 'set_password']
 
@@ -38,7 +38,7 @@ def get_password(
     stored.
 
     This is a convenience function that uses the password methods of the
-    :class:`~easy_vault.KeyRingLib` class.
+    :class:`~easy_vault.Keyring` class.
 
     Parameters:
 
@@ -64,8 +64,8 @@ def get_password(
     Raises:
       ValueError: Use of keyring service and use of password prompting were
         both disabled.
-      :exc:`KeyRingNotAvailable`: No keyring service available.
-      :exc:`KeyRingError`: An error happend in the keyring service.
+      :exc:`KeyringNotAvailable`: No keyring service available.
+      :exc:`KeyringError`: An error happend in the keyring service.
     """
     password = None
 
@@ -73,8 +73,8 @@ def get_password(
         raise ValueError("use_keyring and use_prompt were both False")
 
     if use_keyring:
-        keyringlib = KeyRingLib()
-        password = keyringlib.get_password(filepath)
+        kr = Keyring()
+        password = kr.get_password(filepath)
         if password is not None:
             if verbose:
                 echo("Using password from keyring service")
@@ -97,7 +97,7 @@ def set_password(
     can be disabled, in which case the function does nothing.
 
     This is a convenience function that uses the password methods of the
-    :class:`~easy_vault.KeyRingLib` class.
+    :class:`~easy_vault.Keyring` class.
 
     Parameters:
 
@@ -119,17 +119,17 @@ def set_password(
         Print function to be used for the additional messages in verbose mode.
 
     Raises:
-      :exc:`KeyRingNotAvailable`: No keyring service available.
-      :exc:`KeyRingError`: An error happend in the keyring service.
+      :exc:`KeyringNotAvailable`: No keyring service available.
+      :exc:`KeyringError`: An error happend in the keyring service.
     """
     if use_keyring:
-        keyringlib = KeyRingLib()
-        current_password = keyringlib.get_password(filepath)
+        kr = Keyring()
+        current_password = kr.get_password(filepath)
         if current_password is None:
             if verbose:
                 echo("Setting new password in keyring service")
-            keyringlib.set_password(filepath, password)
+            kr.set_password(filepath, password)
         elif password != current_password:
             if verbose:
                 echo("Updating password in keyring service")
-            keyringlib.set_password(filepath, password)
+            kr.set_password(filepath, password)

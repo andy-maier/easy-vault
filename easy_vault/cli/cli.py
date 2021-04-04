@@ -23,7 +23,7 @@ import click
 
 from ._common_options import add_options, help_option, quiet_option
 from .._version import __version__ as cli_version
-from .._key_ring_lib import KeyRingLib, KeyRingNotAvailable
+from .._keyring import Keyring, KeyringNotAvailable
 from .._easy_vault import EasyVault, EasyVaultException
 from .._password import get_password, set_password
 
@@ -193,8 +193,8 @@ def cli_check_keyring(**options):
     verbose = not options['quiet']
 
     try:
-        KeyRingLib.check_available()
-    except KeyRingNotAvailable as exc:
+        Keyring.check_available()
+    except KeyringNotAvailable as exc:
         if verbose:
             click.echo("Error: {}".format(exc))
             click.get_current_context().exit(1)
