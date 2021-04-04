@@ -51,7 +51,7 @@ Released: not yet
 * Improved error messages when writing vault file during 'EasyVault.encrypt()'
   / 'decrypt()'.
 
-* Test: Improved test coverage of Keyring class.
+* Test: Improved test coverage of Keyring and EasyVault classes.
 
 **Cleanup:**
 

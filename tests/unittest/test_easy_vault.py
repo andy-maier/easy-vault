@@ -785,3 +785,83 @@ def test_vault_get_yaml_fail2(yaml_load_exc, filepath):
 
                 # The code to be tested
                 vault.get_yaml()
+
+
+class EasyVault_generate_key_type(EasyVault):
+    """Derived class with generate_key() returning incorrect type"""
+
+    def generate_key(self, password):
+        """Returns incorrect type unicode string"""
+        # pylint: disable=super-with-arguments
+        self_super = super(EasyVault_generate_key_type, self)
+        result = self_super.generate_key(password)
+        return result.decode('utf-8')
+
+
+def test_vault_generate_key_type():
+    """
+    Test function for overwritten EasyVault.generate_key() that returns
+    incorrect type.
+    """
+    filepath = TEST_VAULT_ENCRYPTED
+    password = TEST_VAULT_PASSWORD
+
+    with saved_file(filepath):
+        with pytest.raises(TypeError):
+
+            # The code to be tested
+            EasyVault_generate_key_type(filepath, password)
+
+
+class EasyVault_encrypt_data_type(EasyVault):
+    """Derived class with encrypt_data() returning incorrect type"""
+
+    def encrypt_data(self, clear_data, key):
+        """Returns incorrect type unicode string"""
+        # pylint: disable=super-with-arguments
+        self_super = super(EasyVault_encrypt_data_type, self)
+        result = self_super.encrypt_data(clear_data, key)
+        return result.decode('utf-8')
+
+
+def test_vault_encrypt_data_type():
+    """
+    Test function for overwritten EasyVault.encrypt_data() that returns
+    incorrect type.
+    """
+    filepath = TEST_VAULT_DECRYPTED
+    password = TEST_VAULT_PASSWORD
+
+    with saved_file(filepath):
+        vault = EasyVault_encrypt_data_type(filepath, password)
+        with pytest.raises(TypeError):
+
+            # The code to be tested
+            vault.encrypt()
+
+
+class EasyVault_decrypt_data_type(EasyVault):
+    """Derived class with decrypt_data() returning incorrect type"""
+
+    def decrypt_data(self, encrypted_data, key):
+        """Returns incorrect type unicode string"""
+        # pylint: disable=super-with-arguments
+        self_super = super(EasyVault_decrypt_data_type, self)
+        result = self_super.decrypt_data(encrypted_data, key)
+        return result.decode('utf-8')
+
+
+def test_vault_decrypt_data_type():
+    """
+    Test function for overwritten EasyVault.decrypt_data() that returns
+    incorrect type.
+    """
+    filepath = TEST_VAULT_ENCRYPTED
+    password = TEST_VAULT_PASSWORD
+
+    with saved_file(filepath):
+        vault = EasyVault_decrypt_data_type(filepath, password)
+        with pytest.raises(TypeError):
+
+            # The code to be tested
+            vault.decrypt()
