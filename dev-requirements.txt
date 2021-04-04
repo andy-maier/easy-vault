@@ -18,6 +18,8 @@ pytest>=4.4.0; python_version >= '3.7'
 
 testfixtures==6.9.0
 
+mock>=2.0.0,<4.0.0; python_version == '2.7'
+
 # virtualenv
 # Virtualenv 20.0.19 has an issue where it does not install pip on Python 3.4.
 # Virtualenv 20.0.32 has an issue where it raises AttributeError on Python 3.4.

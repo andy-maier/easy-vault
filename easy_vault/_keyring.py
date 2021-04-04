@@ -164,9 +164,13 @@ class Keyring(object):
         try:
             pw = keyring.get_password(service, username)
         except NO_KEYRING_EXCEPTION as exc:
-            raise KeyringNotAvailable(str(exc))
+            new_exc = KeyringNotAvailable(str(exc))
+            new_exc.__cause__ = None
+            raise new_exc  # KeyringNotAvailable
         except keyring.errors.KeyringError as exc:
-            raise KeyringError(str(exc))
+            new_exc = KeyringError(str(exc))
+            new_exc.__cause__ = None
+            raise new_exc  # KeyringError
 
         if pw is None:
             return False
@@ -174,9 +178,14 @@ class Keyring(object):
         try:
             keyring.delete_password(service, username)
         except NO_KEYRING_EXCEPTION as exc:
-            raise KeyringNotAvailable(str(exc))
+            new_exc = KeyringNotAvailable(str(exc))
+            new_exc.__cause__ = None
+            raise new_exc  # KeyringNotAvailable
         except keyring.errors.KeyringError as exc:
-            raise KeyringError(str(exc))
+            new_exc = KeyringError(str(exc))
+            new_exc.__cause__ = None
+            raise new_exc  # KeyringError
+
         return True
 
     def is_available(self):
@@ -241,6 +250,10 @@ class Keyring(object):
                 "Keyring test call failed with: {msg}".format(msg=exc))
             new_exc.__cause__ = None
             raise new_exc  # KeyringNotAvailable
+        except keyring.errors.KeyringError as exc:
+            new_exc = KeyringError(str(exc))
+            new_exc.__cause__ = None
+            raise new_exc  # KeyringError
         try:
             keyring.delete_password(service, username)
         except Exception as exc:

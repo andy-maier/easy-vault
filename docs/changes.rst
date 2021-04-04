@@ -37,13 +37,15 @@ Released: not yet
   command. (issue #45)
 
 * Added missing exception handling to 'Keyring.set_password()' and improved
-  exception chaining in 'Keyring.get_password()'.
+  exception chaining in 'Keyring.get_password()' and 'Keyring.delete_password()'.
 
 **Enhancements:**
 
 * Added a 'easy-vault delete-password' command that deletes the password for
   a vault file in the keyring service. Added a corresponding
   'Keyring.delete_password()' method. (issues #33 and #35)
+
+* Test: Improved test coverage of Keyring class.
 
 **Cleanup:**
 
