@@ -19,7 +19,7 @@ from __future__ import absolute_import
 import pytest
 import keyring
 
-from easy_vault import KeyRingLib
+from easy_vault import Keyring
 
 
 @pytest.fixture
@@ -39,17 +39,17 @@ def is_keyring_available():
     Return boolean indicating whether the keyring service is available on
     the local system.
     """
-    keyringlib = KeyRingLib()
-    return keyringlib.is_available()
+    kr = Keyring()
+    return kr.is_available()
 
 
 def remove_keyring_item(filepath):
     """
     Remove the keyring item for the specified vault file, if it exists.
     """
-    keyringlib = KeyRingLib()
-    service = keyringlib.keyring_service()
-    username = keyringlib.keyring_username(filepath)
+    kr = Keyring()
+    service = kr.keyring_service()
+    username = kr.keyring_username(filepath)
 
     if keyring.get_password(service, username) is not None:
         keyring.delete_password(service, username)

@@ -26,6 +26,9 @@ Released: not yet
 
 **Incompatible changes:**
 
+* The KeyRingLib class has been renamed to Keyring, and its KeyRing...
+  exception classes to Keyring... (issue #50).
+
 **Deprecations:**
 
 **Bug fixes:**

@@ -11,13 +11,13 @@
 # limitations under the License.
 
 """
-Test the _key_ring_lib.py module.
+Test the _keyring.py module.
 """
 
 from __future__ import absolute_import, print_function
 
 import pytest
-from easy_vault import KeyRingLib, KeyRingNotAvailable
+from easy_vault import Keyring, KeyringNotAvailable
 
 # pylint: disable=unused-import
 from ..utils.keyring_utils import keyring_filepath  # noqa: F401
@@ -27,42 +27,42 @@ from ..utils.keyring_utils import is_keyring_available
 @pytest.mark.skipif(
     not is_keyring_available(), reason="No keyring service available")
 # pylint: disable=redefined-outer-name
-def test_keyringlib_get_set(keyring_filepath):
+def test_keyring_get_set(keyring_filepath):
     """
-    Test function for KeyRingLib.get_password() / set_password()
+    Test function for Keyring.get_password() / set_password()
     """
-    keyringlib = KeyRingLib()
+    kr = Keyring()
     password = 'mypassword'
 
     # Test that the password does not exist
-    act_password = keyringlib.get_password(keyring_filepath)
+    act_password = kr.get_password(keyring_filepath)
     assert act_password is None
 
     # Test that setting a password succeeds
-    keyringlib.set_password(keyring_filepath, password)
+    kr.set_password(keyring_filepath, password)
 
     # Test that getting a password succeeds and is as expected
-    act_password = keyringlib.get_password(keyring_filepath)
+    act_password = kr.get_password(keyring_filepath)
     assert act_password == password
 
 
-def test_keyringlib_available():
+def test_keyring_available():
     """
-    Test function for KeyRingLib.is_available()
+    Test function for Keyring.is_available()
     """
-    keyringlib = KeyRingLib()
+    kr = Keyring()
 
     # Code to be tested
-    is_avail = keyringlib.is_available()
+    is_avail = kr.is_available()
 
     assert isinstance(is_avail, bool)
 
     check_avail = True
     try:
         # Code to be tested
-        keyringlib.check_available()
+        kr.check_available()
     except Exception as exc:  # pylint: disable=broad-except
-        assert isinstance(exc, KeyRingNotAvailable)
+        assert isinstance(exc, KeyringNotAvailable)
         check_avail = False
 
     assert check_avail == is_avail

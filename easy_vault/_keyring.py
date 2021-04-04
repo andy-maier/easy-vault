@@ -11,7 +11,7 @@
 # limitations under the License.
 
 """
-The KeyRingLib class.
+The Keyring class.
 """
 
 from __future__ import absolute_import, print_function
@@ -21,8 +21,8 @@ import keyring.backends.chainer  # Required to import separately
 import keyring.backends.null  # Required to import separately
 import keyring.backends.fail
 
-__all__ = ['KeyRingLib', 'KeyRingException', 'KeyRingNotAvailable',
-           'KeyRingError']
+__all__ = ['Keyring', 'KeyringException', 'KeyringNotAvailable',
+           'KeyringError']
 
 
 # Service/app name used for keyring items:
@@ -38,35 +38,35 @@ except AttributeError:
     NO_KEYRING_EXCEPTION = RuntimeError
 
 
-class KeyRingException(Exception):
+class KeyringException(Exception):
     """
     Base exception for all exceptions raised by the
-    :class:`~easy_vault.KeyRingLib` class.
+    :class:`~easy_vault.Keyring` class.
 
     Derived from :exc:`~py:Exception`.
     """
     pass
 
 
-class KeyRingNotAvailable(KeyRingException):
+class KeyringNotAvailable(KeyringException):
     """
     Exception indicating that the keyring service is not available.
 
-    Derived from :exc:`KeyRingException`.
+    Derived from :exc:`KeyringException`.
     """
     pass
 
 
-class KeyRingError(KeyRingException):
+class KeyringError(KeyringException):
     """
     Exception indicating that an error happend in the keyring service.
 
-    Derived from :exc:`KeyRingException`.
+    Derived from :exc:`KeyringException`.
     """
     pass
 
 
-class KeyRingLib(object):
+class Keyring(object):
     """
     Access to the keyring service of the local system for storing vault
     passwords.
@@ -97,16 +97,16 @@ class KeyRingLib(object):
           :term:`unicode string`: Password for the vault file, or `None`.
 
         Raises:
-          :exc:`KeyRingNotAvailable`: No keyring service available.
-          :exc:`KeyRingError`: An error happend in the keyring service.
+          :exc:`KeyringNotAvailable`: No keyring service available.
+          :exc:`KeyringError`: An error happend in the keyring service.
         """
         try:
             return keyring.get_password(
                 self.keyring_service(), self.keyring_username(filepath))
         except NO_KEYRING_EXCEPTION as exc:
-            raise KeyRingNotAvailable(str(exc))
+            raise KeyringNotAvailable(str(exc))
         except keyring.errors.KeyringError as exc:
-            raise KeyRingError(str(exc))
+            raise KeyringError(str(exc))
 
     def set_password(self, filepath, password):
         """
@@ -122,8 +122,8 @@ class KeyRingLib(object):
             Password for the vault file.
 
         Raises:
-          :exc:`KeyRingNotAvailable`: No keyring service available.
-          :exc:`KeyRingError`: An error happend in the keyring service.
+          :exc:`KeyringNotAvailable`: No keyring service available.
+          :exc:`KeyringError`: An error happend in the keyring service.
         """
         keyring.set_password(
             self.keyring_service(), self.keyring_username(filepath), password)
@@ -141,7 +141,7 @@ class KeyRingLib(object):
         """
         try:
             self.check_available()
-        except KeyRingNotAvailable:
+        except KeyringNotAvailable:
             return False
         return True
 
@@ -156,7 +156,7 @@ class KeyRingLib(object):
         some information about the keyring configuration.
 
         Raises:
-          :exc:`KeyRingNotAvailable`: No keyring service available.
+          :exc:`KeyringNotAvailable`: No keyring service available.
         """
 
         # Check the cases where the keyring package indicates it has no
@@ -166,37 +166,37 @@ class KeyRingLib(object):
 
         if isinstance(backend, keyring.backends.chainer.ChainerBackend):
             if not backend.backends:
-                raise KeyRingNotAvailable(
+                raise KeyringNotAvailable(
                     "No keyring service found by the configured backends")
 
         if isinstance(backend, keyring.backends.fail.Keyring):
-            raise KeyRingNotAvailable(
+            raise KeyringNotAvailable(
                 "No keyring service found by the configured backends")
 
         if isinstance(backend, keyring.backends.null.Keyring):
-            raise KeyRingNotAvailable(
+            raise KeyringNotAvailable(
                 "Keyring service disabled by a configured null backend")
 
         # In theory, now the keyring service should be available.
         # We try it out to really make sure.
 
-        keyringlib = KeyRingLib()
-        service = keyringlib.keyring_service()
-        username = keyringlib.keyring_username('deleteme:check_available')
+        kr = Keyring()
+        service = kr.keyring_service()
+        username = kr.keyring_username('deleteme:check_available')
         try:
             keyring.set_password(service, username, 'dummy')
         except NO_KEYRING_EXCEPTION as exc:
-            new_exc = KeyRingNotAvailable(
+            new_exc = KeyringNotAvailable(
                 "Keyring test call failed with: {msg}".format(msg=exc))
             new_exc.__cause__ = None
-            raise new_exc  # KeyRingNotAvailable
+            raise new_exc  # KeyringNotAvailable
         try:
             keyring.delete_password(service, username)
         except Exception as exc:
-            new_exc = KeyRingNotAvailable(
+            new_exc = KeyringNotAvailable(
                 "Keyring cleanup call failed with: {msg}".format(msg=exc))
             new_exc.__cause__ = None
-            raise new_exc  # KeyRingNotAvailable
+            raise new_exc  # KeyringNotAvailable
 
     @staticmethod
     def keyring_service():

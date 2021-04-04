@@ -36,12 +36,12 @@ EasyVault class
     :special-members: __str__
 
 
-.. _`KeyRingLib class`:
+.. _`Keyring class`:
 
-KeyRingLib class
-----------------
+Keyring class
+-------------
 
-.. autoclass:: easy_vault.KeyRingLib
+.. autoclass:: easy_vault.Keyring
     :members:
     :autosummary:
     :autosummary-inherited-members:
@@ -83,15 +83,15 @@ Exception classes
     :members:
     :special-members: __str__
 
-.. autoclass:: easy_vault.KeyRingException
+.. autoclass:: easy_vault.KeyringException
     :members:
     :special-members: __str__
 
-.. autoclass:: easy_vault.KeyRingNotAvailable
+.. autoclass:: easy_vault.KeyringNotAvailable
     :members:
     :special-members: __str__
 
-.. autoclass:: easy_vault.KeyRingError
+.. autoclass:: easy_vault.KeyringError
     :members:
     :special-members: __str__
 
