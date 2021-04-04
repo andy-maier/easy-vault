@@ -36,6 +36,9 @@ Released: not yet
 * Fixed that the package did not contain the files for the 'easy-vault'
   command. (issue #45)
 
+* Added missing exception handling to 'Keyring.set_password()' and improved
+  exception chaining in 'Keyring.get_password()'.
+
 **Enhancements:**
 
 * Added a 'easy-vault delete-password' command that deletes the password for

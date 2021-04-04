@@ -104,9 +104,13 @@ class Keyring(object):
             return keyring.get_password(
                 self.keyring_service(), self.keyring_username(filepath))
         except NO_KEYRING_EXCEPTION as exc:
-            raise KeyringNotAvailable(str(exc))
+            new_exc = KeyringNotAvailable(str(exc))
+            new_exc.__cause__ = None
+            raise new_exc  # KeyringNotAvailable
         except keyring.errors.KeyringError as exc:
-            raise KeyringError(str(exc))
+            new_exc = KeyringError(str(exc))
+            new_exc.__cause__ = None
+            raise new_exc  # KeyringError
 
     def set_password(self, filepath, password):
         """
@@ -125,8 +129,18 @@ class Keyring(object):
           :exc:`KeyringNotAvailable`: No keyring service available.
           :exc:`KeyringError`: An error happend in the keyring service.
         """
-        keyring.set_password(
-            self.keyring_service(), self.keyring_username(filepath), password)
+        try:
+            keyring.set_password(
+                self.keyring_service(),
+                self.keyring_username(filepath), password)
+        except NO_KEYRING_EXCEPTION as exc:
+            new_exc = KeyringNotAvailable(str(exc))
+            new_exc.__cause__ = None
+            raise new_exc  # KeyringNotAvailable
+        except keyring.errors.KeyringError as exc:
+            new_exc = KeyringError(str(exc))
+            new_exc.__cause__ = None
+            raise new_exc  # KeyringError
 
     def delete_password(self, filepath):
         """
