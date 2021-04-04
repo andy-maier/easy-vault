@@ -127,6 +127,8 @@ pytest==4.4.0; python_version >= '3.7'
 
 testfixtures==6.9.0
 
+mock==2.0.0; python_version == '2.7'
+
 # virtualenv
 virtualenv==14.0.0; python_version < '3.5'
 virtualenv==16.1.0; python_version >= '3.5' and python_version < '3.8'
