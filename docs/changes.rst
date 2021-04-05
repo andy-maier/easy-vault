@@ -48,6 +48,12 @@ Released: not yet
   a vault file in the keyring service. Added a corresponding
   'Keyring.delete_password()' method. (issues #33 and #35)
 
+* Added a 'easy-vault check-encrypted' command that checks whether the vault
+  file is encrypted and exits with 1 if that is ot the case. This can be used
+  for example if the vault file is stored in a repository to regularly check
+  whether it is encrypted to ensure it has not been committed by mistake in the
+  decrypted state. (issue #57)
+
 * Improved error messages when writing vault file during 'EasyVault.encrypt()'
   / 'decrypt()'.
 
