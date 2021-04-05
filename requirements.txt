@@ -56,3 +56,8 @@ Click>=7.1.1; python_version >= '3.5'
 
 pywin32-ctypes>=0.2.0; sys_platform == 'win32'
 cffi>=1.14.5
+
+# configparser 5.0 removed support for Python 2.7/3.4/3.5 and declares that
+#   properly but pip 20.3 nevertheless tries to install 5.x.
+#   It is used only by keyring and only on Python 2.7.
+configparser>=3.5,<5.0; python_version == '2.7'
