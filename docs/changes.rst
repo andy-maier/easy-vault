@@ -17,19 +17,17 @@ Change log
 ==========
 
 
-Version 0.7.0.dev1
-------------------
+Version 0.7.0
+-------------
 
 This version contains all fixes up to version 0.6.1.
 
-Released: not yet
+Released: 2021-04-05
 
 **Incompatible changes:**
 
 * The KeyRingLib class has been renamed to Keyring, and its KeyRing...
   exception classes to Keyring... (issue #50).
-
-**Deprecations:**
 
 **Bug fixes:**
 
@@ -60,14 +58,6 @@ Released: not yet
   / 'decrypt()'.
 
 * Test: Improved test coverage of Keyring and EasyVault classes.
-
-**Cleanup:**
-
-**Known issues:**
-
-* See `list of open issues`_.
-
-.. _`list of open issues`: https://github.com/andy-maier/easy-vault/issues
 
 
 Version 0.6.0
