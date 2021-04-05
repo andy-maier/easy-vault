@@ -179,6 +179,30 @@ def cli_decrypt(vaultfile, **options):
                  verbose=verbose, echo=click.echo)
 
 
+@cli.command('check-encrypted')
+@click.argument('vaultfile', type=str, metavar='VAULTFILE', required=True)
+@add_options(quiet_option)
+@add_options(help_option)
+def cli_check_encrypted(vaultfile, **options):
+    """
+    Check whether the vault file is encrypted.
+
+    If encrypted, the command exits with 0.
+    If not encrypted, the command exits with 1.
+    """
+    verbose = not options['quiet']
+
+    check_exists(vaultfile)
+
+    if not EasyVault(vaultfile).is_encrypted():
+        if verbose:
+            click.echo("Error: Vault file is not encrypted")
+        click.get_current_context().exit(1)
+
+    if verbose:
+        click.echo("Success! Vault file is encrypted")
+
+
 @cli.command('check-keyring')
 @add_options(quiet_option)
 @add_options(help_option)

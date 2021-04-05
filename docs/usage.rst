@@ -64,6 +64,7 @@ This command displays self-explanatory help, e.g.:
     $ easy-vault encrypt --help
     $ easy-vault decrypt --help
     $ easy-vault check-keyring --help
+    $ easy-vault check-encrypted --help
 
 
 .. _`Accessing the secrets in a program`:
