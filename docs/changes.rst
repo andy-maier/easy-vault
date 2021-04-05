@@ -44,6 +44,8 @@ Released: not yet
 
 **Enhancements:**
 
+* Increased development status to beta.
+
 * Added a 'easy-vault delete-password' command that deletes the password for
   a vault file in the keyring service. Added a corresponding
   'Keyring.delete_password()' method. (issues #33 and #35)
