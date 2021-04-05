@@ -18,4 +18,4 @@ packages or on importability of the other modules of this package.
 """
 
 # For a escription, see __init__.py.
-__version__ = '0.7.0'
+__version__ = '0.8.0.dev1'
