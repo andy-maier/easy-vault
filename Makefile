@@ -46,7 +46,7 @@ ifeq ($(PACKAGE_LEVEL),minimum)
   pip_level_opts := -c minimum-constraints.txt
 else
   ifeq ($(PACKAGE_LEVEL),latest)
-    pip_level_opts := --upgrade --upgrade-strategy eager
+    pip_level_opts := --upgrade
   else
     $(error Error: Invalid value for PACKAGE_LEVEL variable: $(PACKAGE_LEVEL))
   endif
@@ -357,14 +357,13 @@ pip_upgrade_$(python_pymn_version).done: Makefile
 	@echo "Makefile: Installing/upgrading Pip (with PACKAGE_LEVEL=$(PACKAGE_LEVEL))"
 	-$(call RM_FUNC,$@)
 	bash -c 'pv=$$($(PIP_CMD) --version); if [[ $$pv =~ (^pip [1-8]\..*) ]]; then $(PYTHON_CMD) -m pip $(pip_opts) install pip==9.0.1; fi'
-	$(PYTHON_CMD) -m pip $(pip_opts) install $(pip_level_opts) pip
 	echo "done" >$@
 	@echo "Makefile: Done installing/upgrading Pip"
 
-install_basic_$(python_pymn_version).done: Makefile pip_upgrade_$(python_pymn_version).done
+install_basic_$(python_pymn_version).done: Makefile pip_upgrade_$(python_pymn_version).done base-requirements.txt
 	@echo "Makefile: Installing/upgrading basic Python packages (with PACKAGE_LEVEL=$(PACKAGE_LEVEL))"
 	-$(call RM_FUNC,$@)
-	$(PIP_CMD_MOD) $(pip_opts) install $(pip_level_opts) setuptools wheel
+	$(PIP_CMD_MOD) $(pip_opts) install $(pip_level_opts) -r base-requirements.txt
 	echo "done" >$@
 	@echo "Makefile: Done installing/upgrading basic Python packages"
 
